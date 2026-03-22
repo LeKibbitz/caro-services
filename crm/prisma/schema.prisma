@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth ───────────────────────────────────────────────
+
+enum UserRole {
+  admin
+  client
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(client)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions     Session[]
+  magicLinks   MagicLink[]
+  contacts     Contact[]    @relation("ContactUser")
+  documents    Document[]   @relation("UploadedBy")
+  appointments Appointment[]
+
+  @@map("users")
+}
+
+model MagicLink {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?   @map("user_id")
+
+  @@map("magic_links")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ─── Clients / Prospects ────────────────────────────────
+
+enum ContactType {
+  prospect
+  client
+  ancien
+}
+
+model Contact {
+  id          String      @id @default(cuid())
+  userId      String?     @unique @map("user_id")
+  type        ContactType @default(prospect)
+  companyName String?     @map("company_name")
+  firstName   String      @map("first_name")
+  lastName    String      @map("last_name")
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  country     String?     @default("Luxembourg")
+  notes       String?
+  source      String?
+  waId        String?     @map("wa_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user         User?        @relation("ContactUser", fields: [userId], references: [id])
+  quotes       Quote[]
+  invoices     Invoice[]
+  dossiers     Dossier[]
+  documents    Document[]
+  appointments Appointment[]
+  messages     Message[]
+
+  @@map("contacts")
+}
+
+// ─── Devis & Facturation ────────────────────────────────
+
+enum QuoteStatus {
+  draft
+  sent
+  accepted
+  rejected
+  expired
+}
+
+model Quote {
+  id        String      @id @default(cuid())
+  contactId String      @map("contact_id")
+  number    String      @unique
+  status    QuoteStatus @default(draft)
+  items     Json
+  subtotal  Decimal     @db.Decimal(10, 2)
+  taxRate   Decimal     @default(0) @map("tax_rate") @db.Decimal(5, 2)
+  taxAmount Decimal     @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  total     Decimal     @db.Decimal(10, 2)
+  validUntil DateTime?  @map("valid_until")
+  notes     String?
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  contact  Contact   @relation(fields: [contactId], references: [id])
+  invoices Invoice[]
+
+  @@map("quotes")
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  contactId     String        @map("contact_id")
+  quoteId       String?       @map("quote_id")
+  number        String        @unique
+  status        InvoiceStatus @default(draft)
+  items         Json
+  subtotal      Decimal       @db.Decimal(10, 2)
+  taxRate       Decimal       @default(0) @map("tax_rate") @db.Decimal(5, 2)
+  taxAmount     Decimal       @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  dueDate       DateTime?     @map("due_date")
+  paidAt        DateTime?     @map("paid_at")
+  paymentMethod String?       @map("payment_method")
+  notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  contact Contact @relation(fields: [contactId], references: [id])
+  quote   Quote?  @relation(fields: [quoteId], references: [id])
+
+  @@map("invoices")
+}
+
+// ─── Dossiers Fiscaux ───────────────────────────────────
+
+enum DossierType {
+  tva_mensuelle
+  ir
+  is
+  comptabilite
+  ccss
+  coordination
+}
+
+enum DossierStatus {
+  todo
+  docs_pending
+  in_progress
+  review
+  done
+}
+
+model Dossier {
+  id        String        @id @default(cuid())
+  contactId String        @map("contact_id")
+  type      DossierType
+  year      Int
+  period    String?
+  status    DossierStatus @default(todo)
+  deadline  DateTime?
+  checklist Json?
+  notes     String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  contact   Contact    @relation(fields: [contactId], references: [id])
+  documents Document[]
+
+  @@map("dossiers")
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  dossierId  String?  @map("dossier_id")
+  contactId  String   @map("contact_id")
+  name       String
+  path       String
+  mimeType   String?  @map("mime_type")
+  size       Int?
+  uploadedBy String   @map("uploaded_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  dossier  Dossier? @relation(fields: [dossierId], references: [id])
+  contact  Contact  @relation(fields: [contactId], references: [id])
+  uploader User     @relation("UploadedBy", fields: [uploadedBy], references: [id])
+
+  @@map("documents")
+}
+
+// ─── Agenda ─────────────────────────────────────────────
+
+enum AppointmentType {
+  consultation
+  suivi
+  admin
+}
+
+enum AppointmentStatus {
+  scheduled
+  done
+  cancelled
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  contactId   String?           @map("contact_id")
+  userId      String?           @map("user_id")
+  title       String
+  description String?
+  startAt     DateTime          @map("start_at")
+  endAt       DateTime          @map("end_at")
+  location    String?
+  type        AppointmentType   @default(consultation)
+  status      AppointmentStatus @default(scheduled)
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  contact Contact? @relation(fields: [contactId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id])
+
+  @@map("appointments")
+}
+
+// ─── Inbox ──────────────────────────────────────────────
+
+enum MessageChannel {
+  whatsapp
+  email
+}
+
+enum MessageDirection {
+  in
+  out
+}
+
+model Message {
+  id        String           @id @default(cuid())
+  contactId String?          @map("contact_id")
+  channel   MessageChannel
+  direction MessageDirection
+  fromAddr  String?          @map("from_addr")
+  toAddr    String?          @map("to_addr")
+  subject   String?
+  body      String
+  rawData   Json?            @map("raw_data")
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  contact Contact? @relation(fields: [contactId], references: [id])
+
+  @@map("messages")
+}

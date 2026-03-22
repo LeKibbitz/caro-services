@@ -1,0 +1,51 @@
+services:
+  caro-db:
+    image: postgres:16-alpine
+    container_name: caro-crm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: caro_crm
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: caro_crm
+    volumes:
+      - caro-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caro_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - caro-net
+
+  caro-crm:
+    build: .
+    container_name: caro-crm
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://caro_crm:${DB_PASSWORD}@caro-crm-db:5432/caro_crm
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      APP_URL: https://crm.caroline-finance.com
+      SESSION_SECRET: ${SESSION_SECRET}
+    depends_on:
+      caro-db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.caro-crm.rule=Host(`crm.caroline-finance.com`)"
+      - "traefik.http.routers.caro-crm.entrypoints=websecure"
+      - "traefik.http.routers.caro-crm.tls.certresolver=letsencrypt"
+      - "traefik.http.services.caro-crm.loadbalancer.server.port=3010"
+      - "traefik.http.routers.caro-crm-http.rule=Host(`crm.caroline-finance.com`)"
+      - "traefik.http.routers.caro-crm-http.entrypoints=web"
+    networks:
+      - caro-net
+
+networks:
+  caro-net:
+    driver: bridge
+
+volumes:
+  caro-db-data:
