@@ -67,13 +67,20 @@ export async function createOutreach(formData: FormData) {
     const cardUrl = cardVersion
       ? `${process.env.APP_URL ?? "https://crm.caroline-finance.com"}/cards/${cardVersion}.png`
       : null;
-    await sendOutreachEmail({
-      to: outreach.lead.email,
-      subject: subject ?? `Contact — ${outreach.lead.salonName}`,
-      body,
-      fromName: "Caroline Finance",
-      cardImageUrl: cardUrl,
-    });
+    try {
+      await sendOutreachEmail({
+        to: outreach.lead.email,
+        subject: subject ?? `Contact — ${outreach.lead.salonName}`,
+        body,
+        fromName: "Caroline Finance",
+        cardImageUrl: cardUrl,
+      });
+    } catch (err) {
+      console.error("Email send failed (outreach saved):", err);
+      // Update outreach status back to draft since send failed
+      await db.outreach.update({ where: { id: outreach.id }, data: { status: "draft", sentAt: null } });
+      throw new Error("L'email n'a pas pu être envoyé. Vérifiez la configuration SMTP. L'outreach a été sauvegardé en brouillon.");
+    }
   }
 
   if (sendNow && (channel === "whatsapp" || channel === "sms") && outreach.lead.phone) {

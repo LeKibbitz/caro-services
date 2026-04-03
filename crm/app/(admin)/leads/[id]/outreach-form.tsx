@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Send, FileText, Mail, MessageCircle, Smartphone, CreditCard, Settings } from "lucide-react";
 import { createOutreach } from "../actions";
+import { CARD_VERSIONS } from "@/lib/cards";
 import type { OutreachChannel } from "@/lib/generated/prisma/client";
 
-type Template = { id: string; name: string; channel: OutreachChannel; subject: string | null; body: string };
+type Template = { id: string; name: string; channel: OutreachChannel; subject: string | null; body: string; cardVersion: string | null };
 type ChannelConfig = { value: OutreachChannel; label: string; icon: React.ReactNode };
 
 const CHANNELS: ChannelConfig[] = [
@@ -20,13 +21,7 @@ const CHANNELS: ChannelConfig[] = [
   { value: "sms", label: "SMS", icon: <Smartphone className="h-3.5 w-3.5" /> },
 ];
 
-const CARD_NAMES: Record<string, string> = {
-  v1: "V1 Signature", v2: "V2 Bande latérale", v3: "V3 Dark élégante", v4: "V4 Bicolore",
-  v5: "V5 Orange bold", v6: "V6 Géométrique", v7: "V7 Ligne fine", v8: "V8 Shadow",
-  v9: "V9 Gradient", v10: "V10 Typo", v11: "V11 Arrondi XL", v12: "V12 Dégradé orange",
-  v13: "V13 Sombre orange", v14: "V14 Bordure", v15: "V15 Texturée", v16: "V16 Diagonal",
-  v17: "V17 Initiales", v18: "V18 Carré central", v19: "V19 Compact", v20: "V20 Premium noir",
-};
+const CARD_NAMES = Object.fromEntries(CARD_VERSIONS.map((c) => [c.id, c.name]));
 
 function applyVariables(text: string, salonName: string, ownerName: string | null) {
   const firstName = ownerName ? ownerName.split(" ")[0] : "";
@@ -68,6 +63,7 @@ export function OutreachForm({
         if (first && !body) {
           setSubject(applyVariables(first.subject ?? "", salonName, ownerName));
           setBody(applyVariables(first.body, salonName, ownerName));
+          if (first.cardVersion) setSelectedCard(first.cardVersion);
         }
       })
       .catch(() => {});
@@ -82,18 +78,20 @@ export function OutreachForm({
   function applyTemplate(t: Template) {
     setSubject(applyVariables(t.subject ?? "", salonName, ownerName));
     setBody(applyVariables(t.body, salonName, ownerName));
+    setSelectedCard(t.cardVersion ?? null);
   }
 
   function handleChannelChange(newChannel: OutreachChannel) {
     setChannel(newChannel);
-    setSelectedCard(null);
     const first = templates.find((t) => t.channel === newChannel);
     if (first) {
       setSubject(applyVariables(first.subject ?? "", salonName, ownerName));
       setBody(applyVariables(first.body, salonName, ownerName));
+      setSelectedCard(first.cardVersion ?? null);
     } else {
       setSubject("");
       setBody("");
+      setSelectedCard(null);
     }
   }
 

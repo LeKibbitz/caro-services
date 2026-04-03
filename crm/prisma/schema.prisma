@@ -337,13 +337,14 @@ model Lead {
 }
 
 model OutreachTemplate {
-  id        String          @id @default(cuid())
-  name      String
-  channel   OutreachChannel
-  subject   String?
-  body      String
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
+  id          String          @id @default(cuid())
+  name        String
+  channel     OutreachChannel
+  subject     String?
+  body        String
+  cardVersion String?         @map("card_version")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
 
   @@map("outreach_templates")
 }

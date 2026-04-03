@@ -12,6 +12,7 @@ export async function createTemplate(formData: FormData) {
       channel: formData.get("channel") as OutreachChannel,
       subject: (formData.get("subject") as string) || null,
       body: formData.get("body") as string,
+      cardVersion: (formData.get("cardVersion") as string) || null,
     },
   });
   revalidatePath("/templates");
@@ -26,6 +27,7 @@ export async function updateTemplate(id: string, formData: FormData) {
       channel: formData.get("channel") as OutreachChannel,
       subject: (formData.get("subject") as string) || null,
       body: formData.get("body") as string,
+      cardVersion: (formData.get("cardVersion") as string) || null,
     },
   });
   revalidatePath("/templates");

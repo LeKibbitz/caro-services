@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, Mail, MessageCircle, Smartphone, X, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, Mail, MessageCircle, Smartphone, X, Check, CreditCard } from "lucide-react";
 import { createTemplate, updateTemplate, deleteTemplate } from "./actions";
+import { CARD_VERSIONS } from "@/lib/cards";
 import type { OutreachChannel } from "@/lib/generated/prisma/client";
 
 type Template = {
@@ -17,6 +17,7 @@ type Template = {
   channel: OutreachChannel;
   subject: string | null;
   body: string;
+  cardVersion: string | null;
 };
 
 const CHANNEL_CONFIG: Record<OutreachChannel, { label: string; icon: React.ReactNode; color: string }> = {
@@ -24,6 +25,42 @@ const CHANNEL_CONFIG: Record<OutreachChannel, { label: string; icon: React.React
   whatsapp: { label: "WhatsApp", icon: <MessageCircle className="h-3.5 w-3.5" />, color: "bg-emerald-100 text-emerald-800" },
   sms: { label: "SMS", icon: <Smartphone className="h-3.5 w-3.5" />, color: "bg-amber-100 text-amber-800" },
 };
+
+function CardPicker({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs flex items-center gap-1">
+        <CreditCard className="h-3 w-3" /> Signature — carte de visite par défaut
+      </Label>
+      <div className="flex flex-wrap gap-1">
+        <button
+          type="button"
+          onClick={() => onChange(null)}
+          className={`px-2 py-0.5 rounded text-xs border transition-colors ${
+            !value ? "border-border bg-muted text-muted-foreground font-medium" : "border-transparent text-muted-foreground hover:border-border"
+          }`}
+        >
+          Aucune
+        </button>
+        {CARD_VERSIONS.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => onChange(c.id)}
+            className={`px-2 py-0.5 rounded text-xs border transition-colors ${
+              value === c.id
+                ? "border-primary bg-primary/10 text-primary font-medium"
+                : "border-border text-muted-foreground hover:border-muted-foreground/50"
+            }`}
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+      <input type="hidden" name="cardVersion" value={value ?? ""} />
+    </div>
+  );
+}
 
 function TemplateForm({
   initial,
@@ -35,6 +72,7 @@ function TemplateForm({
   onCancel: () => void;
 }) {
   const [channel, setChannel] = useState<OutreachChannel>(initial?.channel ?? "email");
+  const [cardVersion, setCardVersion] = useState<string | null>(initial?.cardVersion ?? null);
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -92,6 +130,7 @@ function TemplateForm({
           Variables : <code>[Prénom]</code> · <code>[Nom]</code> · <code>[Salon]</code>
         </p>
       </div>
+      <CardPicker value={cardVersion} onChange={setCardVersion} />
       <div className="flex gap-2 justify-end">
         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
           <X className="h-3.5 w-3.5 mr-1" /> Annuler
@@ -160,6 +199,12 @@ export function TemplateList({ templates }: { templates: Template[] }) {
                           <div className="font-medium text-sm">{t.name}</div>
                           {t.subject && (
                             <div className="text-xs text-muted-foreground mt-0.5">Objet : {t.subject}</div>
+                          )}
+                          {t.cardVersion && (
+                            <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                              <CreditCard className="h-3 w-3" />
+                              {CARD_VERSIONS.find((c) => c.id === t.cardVersion)?.name ?? t.cardVersion}
+                            </div>
                           )}
                           <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 whitespace-pre-line">
                             {t.body}
