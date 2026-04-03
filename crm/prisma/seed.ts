@@ -164,6 +164,12 @@ Caroline`,
       subject: null,
       body: `Bonjour [Prénom], c'est Caroline — comptabilité & fiscalité Luxembourg. Je vous contacte au sujet de [Salon]. Disponible pour en discuter ?`,
     },
+    {
+      name: "Relance SMS",
+      channel: "sms" as const,
+      subject: null,
+      body: `Bonjour [Prénom], je reviens vers vous au sujet de [Salon]. N'hésitez pas à me répondre si vous souhaitez échanger.`,
+    },
   ];
 
   for (const t of templateData) {
