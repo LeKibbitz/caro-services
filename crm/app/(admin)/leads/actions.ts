@@ -35,7 +35,7 @@ function getCardImageBase64(version: string): string | null {
   }
 }
 
-export async function createOutreach(formData: FormData) {
+export async function createOutreach(formData: FormData): Promise<{ error?: string }> {
   const db = getDb();
   const leadId = formData.get("leadId") as string;
   const channel = formData.get("channel") as OutreachChannel;
@@ -77,9 +77,9 @@ export async function createOutreach(formData: FormData) {
       });
     } catch (err) {
       console.error("Email send failed (outreach saved):", err);
-      // Update outreach status back to draft since send failed
       await db.outreach.update({ where: { id: outreach.id }, data: { status: "draft", sentAt: null } });
-      throw new Error("L'email n'a pas pu être envoyé. Vérifiez la configuration SMTP. L'outreach a été sauvegardé en brouillon.");
+      revalidatePath(`/leads/${leadId}`);
+      return { error: "L'email n'a pas pu être envoyé (erreur SMTP). Le message a été sauvegardé en brouillon." };
     }
   }
 
@@ -127,6 +127,7 @@ export async function createOutreach(formData: FormData) {
 
   revalidatePath(`/leads/${leadId}`);
   revalidatePath("/leads");
+  return {};
 }
 
 export async function convertLeadToContact(id: string) {

@@ -50,6 +50,7 @@ export function OutreachForm({
   const [sendNow, setSendNow] = useState(true);
   const [pending, startTransition] = useTransition();
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -104,13 +105,18 @@ export function OutreachForm({
     fd.set("body", body);
     fd.set("sendNow", String(sendNow));
     if (selectedCard) fd.set("cardVersion", selectedCard);
+    setError(null);
     startTransition(async () => {
-      await createOutreach(fd);
-      setSent(true);
-      setBody("");
-      setSubject("");
-      setSelectedCard(null);
-      setTimeout(() => setSent(false), 3000);
+      const result = await createOutreach(fd);
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        setSent(true);
+        setBody("");
+        setSubject("");
+        setSelectedCard(null);
+        setTimeout(() => setSent(false), 3000);
+      }
     });
   }
 
@@ -243,6 +249,13 @@ export function OutreachForm({
           </div>
         )}
       </div>
+
+      {/* SMTP error */}
+      {error && (
+        <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+          {error}
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-center justify-between gap-3">
