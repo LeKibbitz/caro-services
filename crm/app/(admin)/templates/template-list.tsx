@@ -58,6 +58,17 @@ function CardPicker({ value, onChange }: { value: string | null; onChange: (v: s
         ))}
       </div>
       <input type="hidden" name="cardVersion" value={value ?? ""} />
+      {value && (
+        <div className="mt-2 p-3 bg-muted/40 rounded-md border border-border">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Aperçu — signature email</p>
+          <img
+            src={`/cards/${value}.png`}
+            alt={CARD_VERSIONS.find((c) => c.id === value)?.name ?? value}
+            className="rounded-md shadow-sm"
+            style={{ width: 340 }}
+          />
+        </div>
+      )}
     </div>
   );
 }
