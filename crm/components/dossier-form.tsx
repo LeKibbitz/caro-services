@@ -86,7 +86,7 @@ export function DossierForm({ contacts }: DossierFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {contacts.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
+                    <SelectItem key={c.id} value={c.id} label={`${c.firstName} ${c.lastName}${c.companyName ? ` · ${c.companyName}` : ""}`}>
                       {c.firstName} {c.lastName}
                       {c.companyName ? ` · ${c.companyName}` : ""}
                     </SelectItem>

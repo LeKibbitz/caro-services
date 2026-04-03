@@ -42,7 +42,7 @@ export function AppointmentForm({ contacts }: AppointmentFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {contacts.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
+                    <SelectItem key={c.id} value={c.id} label={`${c.firstName} ${c.lastName}`}>
                       {c.firstName} {c.lastName}
                     </SelectItem>
                   ))}

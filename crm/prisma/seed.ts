@@ -99,6 +99,94 @@ async function main() {
   });
 
   console.log("Facture exemple créée");
+
+  // Templates de messages outreach
+  const templateData = [
+    {
+      name: "Intro WhatsApp",
+      channel: "whatsapp" as const,
+      subject: null,
+      body: `Bonjour [Prénom] 👋
+
+Je me permets de vous contacter au sujet de [Salon].
+
+Spécialisée en fiscalité et comptabilité au Luxembourg, j'accompagne les indépendants et gérants dans leur déclaration TVA, impôts sur le revenu et gestion administrative.
+
+Seriez-vous disponible pour un échange rapide, sans engagement ?
+
+Bonne journée,
+— Caroline Charpentier
+📞 +352 661 521 101
+🌐 caroline-finance.com`,
+    },
+    {
+      name: "Relance WhatsApp",
+      channel: "whatsapp" as const,
+      subject: null,
+      body: `Bonjour [Prénom],
+
+Je me permets de vous relancer suite à mon message précédent concernant [Salon].
+
+Si vous avez des questions ou souhaitez qu'on échange rapidement sur vos besoins, n'hésitez pas à me répondre ou à m'appeler directement.
+
+Belle journée,
+📞 +352 661 521 101`,
+    },
+    {
+      name: "Intro Email",
+      channel: "email" as const,
+      subject: "[Salon] — comptabilité & fiscalité Luxembourg",
+      body: `Bonjour [Prénom],
+
+Je me permets de vous contacter au sujet de [Salon].
+
+Spécialisée en comptabilité et fiscalité au Luxembourg, j'accompagne les indépendants et gérants dans leur quotidien administratif : déclaration TVA, impôts sur le revenu, tenue comptable, CCSS...
+
+Si vous souhaitez qu'on en discute, je suis disponible pour un premier entretien téléphonique sans engagement.
+
+Bien cordialement,
+
+Caroline Charpentier
+Expert-comptable & conseillère fiscale
+
+📞 +352 661 521 101
+📧 contact@caroline-finance.com
+🌐 caroline-finance.com`,
+    },
+    {
+      name: "Relance Email",
+      channel: "email" as const,
+      subject: "Re: [Salon] — suivi de ma proposition",
+      body: `Bonjour [Prénom],
+
+Je reviens vers vous suite à mon email concernant [Salon], resté sans réponse.
+
+Je reste disponible pour un échange à votre convenance — n'hésitez pas à me répondre directement ou à me joindre par téléphone.
+
+Bien cordialement,
+
+Caroline Charpentier
+📞 +352 661 521 101
+🌐 caroline-finance.com`,
+    },
+    {
+      name: "Intro SMS",
+      channel: "sms" as const,
+      subject: null,
+      body: `Bonjour [Prénom], je suis Caroline Charpentier — fiscalité & comptabilité au Luxembourg. Je vous contacte au sujet de [Salon]. Disponible pour un échange ? ☎️ +352 661 521 101`,
+    },
+  ];
+
+  for (const t of templateData) {
+    const existing = await prisma.outreachTemplate.findFirst({
+      where: { name: t.name },
+    });
+    if (!existing) {
+      await prisma.outreachTemplate.create({ data: t });
+      console.log(`Template créé : ${t.name}`);
+    }
+  }
+
   console.log("\n✅ Seed terminé !");
 }
 

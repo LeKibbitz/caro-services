@@ -29,6 +29,8 @@ services:
       SMTP_PASS: ${SMTP_PASS}
       APP_URL: https://crm.caroline-finance.com
       SESSION_SECRET: ${SESSION_SECRET}
+      WA_BRIDGE_URL: ${WA_BRIDGE_URL}
+      WA_BRIDGE_TOKEN: ${WA_BRIDGE_TOKEN}
     depends_on:
       caro-db:
         condition: service_healthy

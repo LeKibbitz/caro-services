@@ -14,6 +14,9 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Target,
+  BookTemplate,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +28,9 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/leads", label: "Leads", icon: Target },
+  { href: "/templates", label: "Modèles", icon: BookTemplate },
+  { href: "/business-cards", label: "Cartes de visite", icon: CreditCard },
   { href: "/contacts", label: "Clients", icon: Users },
   { href: "/quotes", label: "Devis", icon: FileText },
   { href: "/invoices", label: "Factures", icon: Receipt },

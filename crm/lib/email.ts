@@ -17,6 +17,26 @@ function getTransporter() {
   return _transporter;
 }
 
+export async function sendOutreachEmail({
+  to,
+  subject,
+  body,
+  fromName = "Caroline Finance",
+}: {
+  to: string;
+  subject: string;
+  body: string;
+  fromName?: string;
+}) {
+  await getTransporter().sendMail({
+    from: `"${fromName}" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/\n/g, "<br>")}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg</p></div>`,
+    text: body,
+  });
+}
+
 export async function sendMagicLinkEmail(
   to: string,
   token: string,

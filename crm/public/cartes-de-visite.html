@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartes de Visite — Caroline Charpentier — 20 Versions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #FA5D29;
+  --orange-light: rgba(250,93,41,0.08);
+  --orange-mid: rgba(250,93,41,0.15);
+  --dark: #111;
+  --text: #222;
+  --muted: #888;
+  --light-muted: #aaa;
+  --bg-light: #F8F8F8;
+  --white: #fff;
+  --border: rgba(0,0,0,0.06);
+}
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #111;
+  color: #eee;
+  padding: 40px 20px 80px;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 300;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+h1 span { color: var(--orange); font-weight: 800; }
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 60px;
+}
+
+.version-title {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--orange);
+  margin: 64px 0 20px;
+}
+
+.card-pair {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.card-label {
+  text-align: center;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #555;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.card {
+  width: 425px;
+  height: 275px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.qr { width: 100%; height: 100%; display: block; }
+
+
+/* ============================================
+   V1 — SIGNATURE MINIMALE
+   ============================================ */
+.v1r {
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 44px;
+}
+.v1r .logo { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 30px; }
+.v1r .logo b { color: var(--orange); font-weight: 800; font-size: 14px; }
+.v1r .name { font-size: 22px; font-weight: 300; color: var(--text); letter-spacing: -0.03em; }
+.v1r .role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); margin-top: 5px; }
+.v1r .div { width: 32px; height: 2px; background: var(--orange); margin: 18px 0; }
+.v1r .info { font-size: 11px; color: var(--muted); line-height: 1.8; }
+.v1r .info strong { color: var(--text); font-weight: 500; }
+
+.v1v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v1v .qb { width: 120px; height: 120px; padding: 8px; border: 1.5px solid #f0f0f0; border-radius: 8px; }
+.v1v .ql { margin-top: 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--light-muted); font-weight: 500; }
+.v1v .lb { position: absolute; bottom: 26px; font-size: 11px; font-weight: 500; color: #ccc; }
+.v1v .lb b { color: var(--orange); font-weight: 800; }
+
+
+/* ============================================
+   V2 — BANDE LATÉRALE
+   ============================================ */
+.v2r {
+  background: var(--white);
+  display: flex;
+}
+.v2r .bar { width: 7px; background: var(--orange); flex-shrink: 0; }
+.v2r .ct { padding: 34px 34px 34px 30px; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+.v2r .name { font-size: 20px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v2r .role { font-size: 12px; color: var(--orange); font-weight: 500; margin: 4px 0 22px; }
+.v2r .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 20px; font-size: 10.5px; }
+.v2r .grid .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; font-weight: 600; }
+.v2r .grid .val { color: #444; }
+
+.v2v {
+  background: var(--orange);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v2v .qw { background: #fff; border-radius: 12px; padding: 12px; width: 126px; height: 126px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.v2v .br { margin-top: 16px; font-size: 14px; font-weight: 500; color: #fff; }
+.v2v .br b { font-weight: 800; }
+.v2v .tg { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 3px; letter-spacing: 0.06em; }
+
+
+/* ============================================
+   V3 — DARK ÉLÉGANTE
+   ============================================ */
+.v3r {
+  background: var(--dark);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  position: relative;
+}
+.v3r::after { content:''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--orange); }
+.v3r .logo { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 26px; }
+.v3r .logo b { color: var(--orange); font-weight: 800; }
+.v3r .name { font-size: 23px; font-weight: 300; color: #fff; letter-spacing: -0.03em; }
+.v3r .role { font-size: 11px; color: var(--orange); font-weight: 500; margin: 4px 0 20px; }
+.v3r .row { display: flex; gap: 24px; font-size: 10.5px; color: rgba(255,255,255,0.5); }
+.v3r .row .v { color: rgba(255,255,255,0.85); }
+
+.v3v {
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  position: relative;
+}
+.v3v::after { content:''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--orange); }
+.v3v .cm { position: absolute; top: 22px; left: 34px; font-size: 36px; font-weight: 800; color: var(--orange); opacity: 0.12; }
+.v3v .qb { border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; background: #fff; width: 122px; height: 122px; }
+.v3v .url { margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; }
+
+
+/* ============================================
+   V4 — BICOLORE SPLIT
+   ============================================ */
+.v4r {
+  background: var(--white); display: flex;
+}
+.v4r .lz { flex: 1; padding: 34px 0 34px 40px; display: flex; flex-direction: column; justify-content: center; }
+.v4r .rz { width: 148px; background: var(--bg-light); display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border); }
+.v4r .cb { font-size: 72px; font-weight: 800; color: var(--orange); opacity: 0.1; }
+.v4r .name { font-size: 19px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v4r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 4px 0 18px; }
+.v4r .cl { font-size: 10.5px; color: var(--muted); line-height: 2; }
+.v4r .cl .v { color: #444; }
+
+.v4v {
+  background: var(--bg-light); display: flex; position: relative;
+}
+.v4v .lb { width: 148px; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid var(--border); padding: 20px; }
+.v4v .lb .lt { font-size: 11px; font-weight: 500; color: var(--text); text-align: center; line-height: 1.5; }
+.v4v .lb .lt b { color: var(--orange); font-weight: 800; font-size: 16px; display: block; margin-bottom: 4px; }
+.v4v .rq { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.v4v .rq .qw { background: #fff; border-radius: 10px; padding: 10px; width: 114px; height: 114px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+.v4v .rq .st { margin-top: 8px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--light-muted); font-weight: 500; }
+.v4v .fl { position: absolute; bottom: 18px; right: 28px; font-size: 15px; letter-spacing: 3px; }
+
+
+/* ============================================
+   V5 — ORANGE BOLD RECTO
+   ============================================ */
+.v5r {
+  background: var(--orange);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  position: relative; overflow: hidden;
+}
+.v5r .bp { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.06); }
+.v5r .bp1 { top: -40px; right: -40px; width: 200px; height: 200px; }
+.v5r .bp2 { bottom: -60px; left: -30px; width: 160px; height: 160px; }
+.v5r .name { font-size: 24px; font-weight: 300; color: #fff; letter-spacing: -0.03em; z-index: 1; position: relative; }
+.v5r .sep { width: 40px; height: 2px; background: rgba(255,255,255,0.4); margin: 12px 0; z-index: 1; position: relative; }
+.v5r .role { font-size: 12px; color: rgba(255,255,255,0.85); z-index: 1; position: relative; line-height: 1.6; }
+.v5r .fl { position: absolute; bottom: 22px; right: 34px; font-size: 17px; letter-spacing: 5px; z-index: 1; }
+
+.v5v {
+  background: #fff; display: flex; align-items: center; padding: 34px 44px; gap: 32px;
+}
+.v5v .li { flex: 1; }
+.v5v .li .logo { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 14px; }
+.v5v .li .logo b { color: var(--orange); font-weight: 800; font-size: 15px; }
+.v5v .li .ci { font-size: 10.5px; color: var(--muted); line-height: 2; }
+.v5v .li .ci .v { color: #444; }
+.v5v .li .ci .hl { color: var(--orange); font-weight: 500; margin-top: 4px; }
+.v5v .qs { display: flex; flex-direction: column; align-items: center; }
+.v5v .qs .qf { width: 108px; height: 108px; padding: 8px; border: 2px solid var(--orange); border-radius: 10px; }
+.v5v .qs .sl { margin-top: 7px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--orange); font-weight: 600; }
+
+
+/* ============================================
+   V6 — COIN COUPÉ
+   ============================================ */
+.v6r {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  position: relative;
+}
+.v6r .corner { position: absolute; top: 0; right: 0; width: 0; height: 0; border-left: 70px solid transparent; border-top: 70px solid var(--orange); }
+.v6r .name { font-size: 22px; font-weight: 300; color: var(--text); letter-spacing: -0.03em; }
+.v6r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--orange); font-weight: 600; margin: 6px 0 20px; }
+.v6r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v6r .info .v { color: #444; }
+
+.v6v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  position: relative;
+}
+.v6v .corner { position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-right: 70px solid transparent; border-bottom: 70px solid var(--orange); }
+.v6v .qb { width: 118px; height: 118px; padding: 10px; border-radius: 10px; box-shadow: 0 4px 20px rgba(250,93,41,0.12); }
+.v6v .ql { margin-top: 12px; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+
+
+/* ============================================
+   V7 — CADRE ORANGE
+   ============================================ */
+.v7r {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  border: 3px solid var(--orange);
+}
+.v7r .name { font-size: 21px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v7r .role { font-size: 11px; color: var(--orange); font-weight: 500; margin: 4px 0 20px; }
+.v7r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v7r .info .v { color: #444; }
+
+.v7v {
+  background: var(--orange);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  border: 3px solid var(--orange);
+}
+.v7v .inner {
+  background: var(--white); border-radius: 8px; padding: 20px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.v7v .inner .qw { width: 100px; height: 100px; }
+.v7v .inner .ql { margin-top: 8px; font-size: 10px; color: var(--orange); font-weight: 600; letter-spacing: 0.06em; }
+.v7v .br { margin-top: 16px; font-size: 13px; color: #fff; font-weight: 500; }
+.v7v .br b { font-weight: 800; }
+
+
+/* ============================================
+   V8 — GRADIENT SUBTIL
+   ============================================ */
+.v8r {
+  background: linear-gradient(135deg, #fff 0%, #FFF5F1 100%);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+}
+.v8r .logo { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+.v8r .logo b { color: var(--orange); font-weight: 800; }
+.v8r .name { font-size: 22px; font-weight: 300; color: var(--text); letter-spacing: -0.03em; }
+.v8r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--orange); font-weight: 600; margin: 5px 0 18px; }
+.v8r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v8r .info .v { color: #444; }
+
+.v8v {
+  background: linear-gradient(135deg, #FFF5F1 0%, #fff 100%);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v8v .qb { width: 120px; height: 120px; padding: 10px; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(250,93,41,0.1); }
+.v8v .ql { margin-top: 12px; font-size: 10px; color: var(--orange); font-weight: 500; letter-spacing: 0.06em; }
+
+
+/* ============================================
+   V9 — TYPO OVERSIZE
+   ============================================ */
+.v9r {
+  background: var(--white);
+  display: flex; align-items: flex-end;
+  padding: 32px 40px;
+  position: relative;
+}
+.v9r .big-c { position: absolute; top: -20px; right: 20px; font-size: 200px; font-weight: 800; color: var(--orange); opacity: 0.05; line-height: 1; }
+.v9r .ct { z-index: 1; }
+.v9r .name { font-size: 20px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v9r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--orange); font-weight: 600; margin: 4px 0 14px; }
+.v9r .info { font-size: 10px; color: var(--muted); line-height: 1.9; }
+.v9r .info .v { color: #444; }
+
+.v9v {
+  background: var(--white); position: relative;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v9v .big-c { position: absolute; bottom: -20px; left: 10px; font-size: 200px; font-weight: 800; color: var(--orange); opacity: 0.04; line-height: 1; }
+.v9v .qb { width: 116px; height: 116px; padding: 10px; border-radius: 10px; border: 1.5px solid #eee; z-index: 1; }
+.v9v .ql { margin-top: 10px; font-size: 10px; color: var(--muted); z-index: 1; letter-spacing: 0.06em; }
+
+
+/* ============================================
+   V10 — DOTS PATTERN
+   ============================================ */
+.v10r {
+  background: var(--white);
+  background-image: radial-gradient(circle, rgba(250,93,41,0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+}
+.v10r .inner { background: var(--white); padding: 20px 24px; border-radius: 8px; }
+.v10r .name { font-size: 20px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v10r .role { font-size: 11px; color: var(--orange); font-weight: 500; margin: 4px 0 16px; }
+.v10r .info { font-size: 10.5px; color: var(--muted); line-height: 1.8; }
+.v10r .info .v { color: #444; }
+
+.v10v {
+  background: var(--white);
+  background-image: radial-gradient(circle, rgba(250,93,41,0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v10v .qb { width: 120px; height: 120px; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
+.v10v .ql { margin-top: 10px; font-size: 10px; color: var(--orange); font-weight: 500; }
+
+
+/* ============================================
+   V11 — HORIZONTAL LINES
+   ============================================ */
+.v11r {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  position: relative;
+}
+.v11r .lines { position: absolute; top: 0; left: 0; right: 0; display: flex; flex-direction: column; gap: 3px; padding-top: 20px; }
+.v11r .lines div { height: 1px; background: var(--orange); opacity: 0.08; }
+.v11r .lines div:nth-child(1) { opacity: 0.25; }
+.v11r .lines div:nth-child(2) { opacity: 0.18; }
+.v11r .lines div:nth-child(3) { opacity: 0.12; }
+.v11r .ct { z-index: 1; }
+.v11r .name { font-size: 22px; font-weight: 300; color: var(--text); letter-spacing: -0.03em; }
+.v11r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 5px 0 18px; }
+.v11r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v11r .info .v { color: #444; }
+
+.v11v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  position: relative;
+}
+.v11v .lines { position: absolute; bottom: 0; left: 0; right: 0; display: flex; flex-direction: column; gap: 3px; padding-bottom: 20px; }
+.v11v .lines div { height: 1px; background: var(--orange); }
+.v11v .lines div:nth-child(1) { opacity: 0.08; }
+.v11v .lines div:nth-child(2) { opacity: 0.12; }
+.v11v .lines div:nth-child(3) { opacity: 0.18; }
+.v11v .lines div:nth-child(4) { opacity: 0.25; }
+.v11v .qb { width: 118px; height: 118px; padding: 10px; border-radius: 10px; border: 1.5px solid rgba(250,93,41,0.15); z-index: 1; }
+.v11v .ql { margin-top: 10px; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; z-index: 1; }
+
+
+/* ============================================
+   V12 — CERCLE CENTRAL (RECTO)
+   ============================================ */
+.v12r {
+  background: var(--bg-light);
+  display: flex; align-items: center;
+  padding: 0 40px;
+  position: relative;
+}
+.v12r .circle { width: 100px; height: 100px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.v12r .circle .ini { font-size: 36px; font-weight: 800; color: #fff; }
+.v12r .ct { margin-left: 28px; }
+.v12r .name { font-size: 19px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v12r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 3px 0 14px; }
+.v12r .info { font-size: 10px; color: var(--muted); line-height: 1.9; }
+.v12r .info .v { color: #444; }
+
+.v12v {
+  background: var(--bg-light);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v12v .qb { width: 120px; height: 120px; padding: 10px; background: #fff; border-radius: 50%; box-shadow: 0 2px 16px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.v12v .qb img { width: 86px; height: 86px; }
+.v12v .ql { margin-top: 12px; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+
+
+/* ============================================
+   V13 — DOUBLE BANDE
+   ============================================ */
+.v13r {
+  background: var(--white);
+  display: flex;
+}
+.v13r .bars { width: 14px; display: flex; flex-shrink: 0; }
+.v13r .bars .b1 { width: 5px; background: var(--orange); }
+.v13r .bars .b2 { width: 4px; background: transparent; }
+.v13r .bars .b3 { width: 5px; background: var(--orange); opacity: 0.3; }
+.v13r .ct { padding: 34px 34px 34px 26px; display: flex; flex-direction: column; justify-content: center; }
+.v13r .name { font-size: 21px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v13r .role { font-size: 11px; color: var(--orange); font-weight: 500; margin: 4px 0 20px; }
+.v13r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v13r .info .v { color: #444; }
+
+.v13v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  position: relative;
+}
+.v13v .bars { position: absolute; right: 0; top: 0; bottom: 0; width: 14px; display: flex; }
+.v13v .bars .b1 { width: 5px; background: var(--orange); opacity: 0.3; }
+.v13v .bars .b2 { width: 4px; }
+.v13v .bars .b3 { width: 5px; background: var(--orange); }
+.v13v .qb { width: 118px; height: 118px; padding: 10px; border-radius: 10px; border: 1.5px solid #eee; }
+.v13v .ql { margin-top: 10px; font-size: 10px; color: var(--muted); }
+
+
+/* ============================================
+   V14 — VERTICALE CENTERED
+   ============================================ */
+.v14r {
+  background: var(--white);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 30px;
+}
+.v14r .logo { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+.v14r .logo b { color: var(--orange); font-weight: 800; font-size: 14px; }
+.v14r .name { font-size: 22px; font-weight: 300; color: var(--text); letter-spacing: -0.03em; }
+.v14r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--orange); font-weight: 600; margin: 5px 0 16px; }
+.v14r .div { width: 24px; height: 2px; background: var(--orange); margin-bottom: 16px; }
+.v14r .info { font-size: 10.5px; color: var(--muted); line-height: 2; }
+
+.v14v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  text-align: center;
+}
+.v14v .qb { width: 122px; height: 122px; padding: 10px; border-radius: 12px; background: var(--bg-light); }
+.v14v .ql { margin-top: 12px; font-size: 10px; color: var(--orange); font-weight: 500; letter-spacing: 0.08em; }
+.v14v .fl { margin-top: 8px; font-size: 14px; letter-spacing: 4px; }
+
+
+/* ============================================
+   V15 — DARK + ORANGE BOTTOM
+   ============================================ */
+.v15r {
+  background: #1A1A1A;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 34px 40px 0;
+  position: relative;
+}
+.v15r .ct { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.v15r .name { font-size: 22px; font-weight: 300; color: #fff; letter-spacing: -0.03em; }
+.v15r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 5px 0 18px; }
+.v15r .info { font-size: 10.5px; color: rgba(255,255,255,0.5); line-height: 1.9; }
+.v15r .info .v { color: rgba(255,255,255,0.85); }
+.v15r .bottom-bar { height: 6px; background: var(--orange); margin: 0 -40px; }
+
+.v15v {
+  background: #1A1A1A;
+  display: flex; flex-direction: column; position: relative;
+}
+.v15v .main { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.v15v .qb { width: 118px; height: 118px; padding: 10px; background: #fff; border-radius: 10px; }
+.v15v .ql { margin-top: 10px; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
+.v15v .bottom-bar { height: 6px; background: var(--orange); }
+
+
+/* ============================================
+   V16 — ITALIQUE ÉLÉGANTE
+   ============================================ */
+.v16r {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+}
+.v16r .name { font-size: 26px; font-weight: 300; font-style: italic; color: var(--text); letter-spacing: -0.03em; }
+.v16r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--orange); font-weight: 600; margin: 6px 0; }
+.v16r .div { width: 50px; height: 1px; background: #ddd; margin: 14px 0; }
+.v16r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v16r .info .v { color: #444; }
+
+.v16v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v16v .quote { font-size: 14px; font-style: italic; font-weight: 300; color: var(--muted); margin-bottom: 20px; max-width: 260px; text-align: center; line-height: 1.6; }
+.v16v .quote b { color: var(--orange); font-style: normal; font-weight: 600; }
+.v16v .qb { width: 100px; height: 100px; padding: 8px; border-radius: 8px; border: 1px solid #eee; }
+.v16v .ql { margin-top: 8px; font-size: 9px; color: var(--light-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+
+/* ============================================
+   V17 — HALF ORANGE DIAG
+   ============================================ */
+.v17r {
+  background: var(--white);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+}
+.v17r .diag { position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: var(--orange); clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%); opacity: 0.04; }
+.v17r .ct { z-index: 1; }
+.v17r .name { font-size: 21px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v17r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 5px 0 18px; }
+.v17r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v17r .info .v { color: #444; }
+
+.v17v {
+  background: var(--orange);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v17v .diag { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: #fff; clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%); opacity: 0.06; }
+.v17v .qw { background: #fff; border-radius: 14px; padding: 14px; width: 128px; height: 128px; z-index: 1; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+.v17v .ql { margin-top: 14px; font-size: 11px; color: #fff; font-weight: 500; z-index: 1; letter-spacing: 0.04em; }
+
+
+/* ============================================
+   V18 — PILL TAGS
+   ============================================ */
+.v18r {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 32px 40px;
+}
+.v18r .pills { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.v18r .pills span { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px; background: var(--orange-light); color: var(--orange); font-weight: 600; }
+.v18r .name { font-size: 21px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v18r .role { font-size: 11px; color: var(--orange); font-weight: 500; margin: 4px 0 16px; }
+.v18r .info { font-size: 10.5px; color: var(--muted); line-height: 1.9; }
+.v18r .info .v { color: #444; }
+
+.v18v {
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.v18v .pills { display: flex; gap: 6px; margin-bottom: 16px; }
+.v18v .pills span { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px; background: var(--orange-light); color: var(--orange); font-weight: 600; }
+.v18v .qb { width: 110px; height: 110px; padding: 8px; border-radius: 10px; background: var(--bg-light); }
+.v18v .ql { margin-top: 10px; font-size: 10px; color: var(--muted); }
+
+
+/* ============================================
+   V19 — DARK LUXE GOLD-TINTED
+   ============================================ */
+.v19r {
+  background: #0D0D0D;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 38px 44px;
+  position: relative; overflow: hidden;
+}
+.v19r .glow { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(250,93,41,0.06) 0%, transparent 70%); transform: translate(-50%,-50%); }
+.v19r .ct { z-index: 1; }
+.v19r .name { font-size: 24px; font-weight: 300; color: #fff; letter-spacing: -0.03em; }
+.v19r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--orange); font-weight: 600; margin: 6px 0 22px; }
+.v19r .div { width: 28px; height: 2px; background: var(--orange); margin-bottom: 18px; }
+.v19r .info { font-size: 10.5px; color: rgba(255,255,255,0.4); line-height: 1.9; }
+.v19r .info .v { color: rgba(255,255,255,0.8); }
+
+.v19v {
+  background: #0D0D0D;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.v19v .glow { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(250,93,41,0.05) 0%, transparent 70%); transform: translate(-50%,-50%); }
+.v19v .qb { width: 122px; height: 122px; padding: 10px; background: #fff; border-radius: 14px; z-index: 1; box-shadow: 0 0 40px rgba(250,93,41,0.08); }
+.v19v .ql { margin-top: 12px; font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; z-index: 1; }
+.v19v .logo { position: absolute; bottom: 24px; font-size: 11px; color: rgba(255,255,255,0.15); z-index: 1; }
+.v19v .logo b { color: var(--orange); font-weight: 800; opacity: 0.5; }
+
+
+/* ============================================
+   V20 — FULL BLEED PHOTO ZONE
+   ============================================ */
+.v20r {
+  background: var(--white);
+  display: flex;
+}
+.v20r .photo-zone { width: 140px; background: linear-gradient(135deg, var(--orange) 0%, #e04a1e 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.v20r .photo-zone .ini { font-size: 52px; font-weight: 800; color: rgba(255,255,255,0.25); }
+.v20r .ct { flex: 1; padding: 34px 32px; display: flex; flex-direction: column; justify-content: center; }
+.v20r .name { font-size: 19px; font-weight: 300; color: var(--text); letter-spacing: -0.02em; }
+.v20r .role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); font-weight: 600; margin: 4px 0 16px; }
+.v20r .info { font-size: 10px; color: var(--muted); line-height: 2; }
+.v20r .info .v { color: #444; }
+
+.v20v {
+  background: var(--white);
+  display: flex;
+}
+.v20v .left { width: 140px; background: linear-gradient(135deg, var(--orange) 0%, #e04a1e 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; flex-shrink: 0; }
+.v20v .left .br { font-size: 11px; color: rgba(255,255,255,0.9); font-weight: 500; text-align: center; line-height: 1.5; }
+.v20v .left .br b { font-weight: 800; display: block; font-size: 20px; }
+.v20v .right { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.v20v .right .qb { width: 110px; height: 110px; padding: 8px; border-radius: 10px; border: 1.5px solid #eee; }
+.v20v .right .ql { margin-top: 8px; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+</style>
+</head>
+<body>
+
+<h1><span>C</span>aroline Charpentier — Cartes de Visite</h1>
+<p class="subtitle">20 versions · recto-verso · format 85 × 55 mm · QR code → caroline-finance.com</p>
+
+<script>
+// QR code URLs
+const qrOrange = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0";
+const qrDark = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=222222&bgcolor=FFFFFF&margin=0";
+const qrBlack = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=111111&bgcolor=FFFFFF&margin=0";
+
+// Contact info
+const email = "caroline@caroline-finance.com";
+const phone = "+352 621 XXX XXX";
+const web = "caroline-finance.com";
+const loc = "Luxembourg · Grand-Est";
+const name = "Caroline Charpentier";
+</script>
+
+
+<!-- V1 — SIGNATURE MINIMALE -->
+<div class="version-title">V1 — Signature Minimale</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v1r">
+  <div class="logo"><b>C</b>aroline Fiscalité & Comptabilité</div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Fiscalité & Comptabilité — Luxembourg</div>
+  <div class="div"></div>
+  <div class="info"><strong>caroline@caroline-finance.com</strong><br>+352 621 XXX XXX<br>Luxembourg · Grand-Est</div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v1v">
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+  <div class="lb"><b>C</b>aroline</div>
+</div></div>
+</div>
+
+<!-- V2 — BANDE LATÉRALE -->
+<div class="version-title">V2 — Bande Latérale</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v2r">
+  <div class="bar"></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Experte Fiscalité & Comptabilité</div>
+    <div class="grid">
+      <div><div class="lbl">Email</div><div class="val">caroline@caroline-finance.com</div></div>
+      <div><div class="lbl">Téléphone</div><div class="val">+352 621 XXX XXX</div></div>
+      <div><div class="lbl">Web</div><div class="val">caroline-finance.com</div></div>
+      <div><div class="lbl">Localisation</div><div class="val">Luxembourg · Grand-Est</div></div>
+    </div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v2v">
+  <div class="qw"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=222222&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="br"><b>C</b>aroline Finance</div>
+  <div class="tg">Résidents · Frontaliers · TPE/PME</div>
+</div></div>
+</div>
+
+<!-- V3 — DARK ÉLÉGANTE -->
+<div class="version-title">V3 — Dark Élégante</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v3r">
+  <div class="logo"><b>C</b>aroline Fiscalité & Comptabilité</div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Experte Fiscalité & Comptabilité — Luxembourg</div>
+  <div class="row"><div><span class="v">caroline@caroline-finance.com</span></div><div><span class="v">+352 621 XXX XXX</span></div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v3v">
+  <div class="cm">C</div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=111111&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="url">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V4 — BICOLORE SPLIT -->
+<div class="version-title">V4 — Bicolore Split</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v4r">
+  <div class="lz">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="cl"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">caroline-finance.com</div></div>
+  </div>
+  <div class="rz"><div class="cb">C</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v4v">
+  <div class="lb"><div class="lt"><b>C</b>Fiscalité &<br>Comptabilité</div></div>
+  <div class="rq"><div class="qw"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div><div class="st">Scannez pour visiter</div></div>
+  <div class="fl">🇱🇺 🇫🇷</div>
+</div></div>
+</div>
+
+<!-- V5 — ORANGE BOLD -->
+<div class="version-title">V5 — Orange Bold</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v5r">
+  <div class="bp bp1"></div><div class="bp bp2"></div>
+  <div class="name">Caroline<br>Charpentier</div>
+  <div class="sep"></div>
+  <div class="role">Fiscalité & Comptabilité<br>Résidents · Frontaliers · TPE/PME</div>
+  <div class="fl">🇱🇺 🇫🇷</div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v5v">
+  <div class="li">
+    <div class="logo"><b>C</b>aroline Finance</div>
+    <div class="ci"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div><div class="v hl">caroline-finance.com</div></div>
+  </div>
+  <div class="qs"><div class="qf"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div><div class="sl">Scanner</div></div>
+</div></div>
+</div>
+
+<!-- V6 — COIN COUPÉ -->
+<div class="version-title">V6 — Coin Coupé</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v6r">
+  <div class="corner"></div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Experte Fiscalité & Comptabilité</div>
+  <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v6v">
+  <div class="corner"></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V7 — CADRE ORANGE -->
+<div class="version-title">V7 — Cadre Orange</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v7r">
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Experte Fiscalité & Comptabilité — Luxembourg</div>
+  <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">caroline-finance.com</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v7v">
+  <div class="inner"><div class="qw"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=222222&bgcolor=FFFFFF&margin=0" alt="QR"></div><div class="ql">caroline-finance.com</div></div>
+  <div class="br"><b>C</b>aroline Finance</div>
+</div></div>
+</div>
+
+<!-- V8 — GRADIENT SUBTIL -->
+<div class="version-title">V8 — Gradient Subtil</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v8r">
+  <div class="logo"><b>C</b>aroline Fiscalité & Comptabilité</div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Fiscalité & Comptabilité</div>
+  <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v8v">
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V9 — TYPO OVERSIZE -->
+<div class="version-title">V9 — Typo Oversize</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v9r">
+  <div class="big-c">C</div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité — Luxembourg</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v9v">
+  <div class="big-c">C</div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V10 — DOTS PATTERN -->
+<div class="version-title">V10 — Dots Pattern</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v10r">
+  <div class="inner">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Experte Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v10v">
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V11 — HORIZONTAL LINES -->
+<div class="version-title">V11 — Lignes Horizontales</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v11r">
+  <div class="lines"><div></div><div></div><div></div><div></div><div></div></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">caroline-finance.com</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v11v">
+  <div class="lines"><div></div><div></div><div></div><div></div></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V12 — CERCLE CENTRAL -->
+<div class="version-title">V12 — Cercle Central</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v12r">
+  <div class="circle"><div class="ini">CC</div></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v12v">
+  <div class="qb"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR" style="width:86px;height:86px"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V13 — DOUBLE BANDE -->
+<div class="version-title">V13 — Double Bande</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v13r">
+  <div class="bars"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Experte Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v13v">
+  <div class="bars"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V14 — VERTICALE CENTRÉE -->
+<div class="version-title">V14 — Verticale Centrée</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v14r">
+  <div class="logo"><b>C</b>aroline Fiscalité & Comptabilité</div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Fiscalité & Comptabilité — Luxembourg</div>
+  <div class="div"></div>
+  <div class="info">caroline@caroline-finance.com<br>+352 621 XXX XXX</div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v14v">
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+  <div class="fl">🇱🇺 🇫🇷</div>
+</div></div>
+</div>
+
+<!-- V15 — DARK + BARRE ORANGE BAS -->
+<div class="version-title">V15 — Dark + Barre Orange</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v15r">
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+  </div>
+  <div class="bottom-bar"></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v15v">
+  <div class="main">
+    <div class="qb" style="width:118px;height:118px;padding:10px;background:#fff;border-radius:10px"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=111111&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+    <div class="ql" style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.06em">caroline-finance.com</div>
+  </div>
+  <div class="bottom-bar"></div>
+</div></div>
+</div>
+
+<!-- V16 — ITALIQUE ÉLÉGANTE -->
+<div class="version-title">V16 — Italique Élégante</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v16r">
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Fiscalité & Comptabilité — Luxembourg</div>
+  <div class="div"></div>
+  <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v16v">
+  <div class="quote">Votre interlocutrice unique en <b>fiscalité</b> & <b>comptabilité</b></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V17 — HALF DIAG -->
+<div class="version-title">V17 — Diagonale</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v17r">
+  <div class="diag"></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v17v">
+  <div class="diag"></div>
+  <div class="qw"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=222222&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V18 — PILL TAGS -->
+<div class="version-title">V18 — Pill Tags</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v18r">
+  <div class="pills"><span>🇱🇺 Luxembourg</span><span>🇫🇷 Grand-Est</span><span>30+ ans</span></div>
+  <div class="name">Caroline Charpentier</div>
+  <div class="role">Fiscalité & Comptabilité</div>
+  <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div></div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v18v">
+  <div class="pills"><span>Résidents</span><span>Frontaliers</span><span>TPE/PME</span></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+</div></div>
+</div>
+
+<!-- V19 — DARK LUXE -->
+<div class="version-title">V19 — Dark Luxe</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v19r">
+  <div class="glow"></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="div"></div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">Luxembourg · Grand-Est</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v19v">
+  <div class="glow"></div>
+  <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=111111&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+  <div class="ql">caroline-finance.com</div>
+  <div class="logo"><b>C</b>aroline Finance</div>
+</div></div>
+</div>
+
+<!-- V20 — FULL BLEED PHOTO ZONE -->
+<div class="version-title">V20 — Photo Zone</div>
+<div class="card-pair">
+<div><div class="card-label">Recto</div>
+<div class="card v20r">
+  <div class="photo-zone"><div class="ini">CC</div></div>
+  <div class="ct">
+    <div class="name">Caroline Charpentier</div>
+    <div class="role">Fiscalité & Comptabilité</div>
+    <div class="info"><div class="v">caroline@caroline-finance.com</div><div class="v">+352 621 XXX XXX</div><div class="v">caroline-finance.com</div></div>
+  </div>
+</div></div>
+<div><div class="card-label">Verso</div>
+<div class="card v20v">
+  <div class="left"><div class="br"><b>C</b>Fiscalité &<br>Comptabilité</div></div>
+  <div class="right">
+    <div class="qb"><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://caroline-finance.com&color=FA5D29&bgcolor=FFFFFF&margin=0" alt="QR"></div>
+    <div class="ql">Scannez pour visiter</div>
+  </div>
+</div></div>
+</div>
+
+</body>
+</html>

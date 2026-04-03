@@ -13,8 +13,10 @@ import {
   FolderOpen,
   Receipt,
   Calendar,
+  Link2,
 } from "lucide-react";
 import Link from "next/link";
+import { SendMagicLinkButton } from "@/components/send-magic-link-button";
 
 export default async function ContactDetailPage({
   params,
@@ -64,12 +66,17 @@ export default async function ContactDetailPage({
             </p>
           )}
         </div>
-        <Link href={`/contacts/${id}/edit`}>
-          <Button variant="outline" size="sm">
-            <Pencil className="h-4 w-4 mr-2" />
-            Modifier
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          {contact.email && (
+            <SendMagicLinkButton contactId={id} />
+          )}
+          <Link href={`/contacts/${id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

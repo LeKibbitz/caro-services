@@ -2,6 +2,7 @@ import { getDb } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, MessageSquare } from "lucide-react";
+import { SyncButton } from "./sync-button";
 
 export default async function InboxPage({
   searchParams,
@@ -29,18 +30,21 @@ export default async function InboxPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Inbox
-          {unreadCount > 0 && (
-            <Badge variant="destructive" className="ml-3 text-xs">
-              {unreadCount} non lu{unreadCount > 1 ? "s" : ""}
-            </Badge>
-          )}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Messages WhatsApp et emails unifiés.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Inbox
+            {unreadCount > 0 && (
+              <Badge variant="destructive" className="ml-3 text-xs">
+                {unreadCount} non lu{unreadCount > 1 ? "s" : ""}
+              </Badge>
+            )}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Messages WhatsApp et emails unifiés.
+          </p>
+        </div>
+        <SyncButton />
       </div>
 
       <div className="flex gap-2">

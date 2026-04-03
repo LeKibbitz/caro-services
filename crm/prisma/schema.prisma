@@ -18,8 +18,9 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  role      UserRole @default(client)
-  active    Boolean  @default(true)
+  role         UserRole @default(client)
+  active       Boolean  @default(true)
+  passwordHash String?  @map("password_hash")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -89,6 +90,7 @@ model Contact {
   documents    Document[]
   appointments Appointment[]
   messages     Message[]
+  lead         Lead?
 
   @@map("contacts")
 }
@@ -274,4 +276,92 @@ model Message {
   contact Contact? @relation(fields: [contactId], references: [id])
 
   @@map("messages")
+}
+
+// ─── Leads / Prospection ────────────────────────────────
+
+enum LeadStatus {
+  new
+  contacted
+  replied
+  qualified
+  lost
+  converted
+}
+
+enum OutreachChannel {
+  email
+  whatsapp
+  sms
+}
+
+enum OutreachStatus {
+  draft
+  sent
+  replied
+  bounced
+}
+
+model Lead {
+  id              String     @id @default(cuid())
+  salonName       String     @map("salon_name")
+  activityType    String?    @map("activity_type")
+  address         String?
+  phone           String?
+  phones          Json?
+  email           String?
+  emails          Json?
+  ownerName       String?    @map("owner_name")
+  ownerTitle      String?    @map("owner_title")
+  ownerConfidence String?    @map("owner_confidence")
+  ownerSource     String?    @map("owner_source")
+  rcsNumber       String?    @map("rcs_number")
+  linkedinUrl     String?    @map("linkedin_url")
+  enrichNotes     String?    @map("enrich_notes")
+  websiteUrl      String?    @map("website_url")
+  source          String     @default("salonkee")
+  sourceUrl       String?    @map("source_url")
+  reviewsCount    Int?       @map("reviews_count")
+  status          LeadStatus @default(new)
+  notes           String?
+  contactId       String?    @unique @map("contact_id")
+  convertedAt     DateTime?  @map("converted_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  contact    Contact?    @relation(fields: [contactId], references: [id])
+  outreaches Outreach[]
+
+  @@unique([salonName, address], name: "lead_identity")
+  @@map("leads")
+}
+
+model OutreachTemplate {
+  id        String          @id @default(cuid())
+  name      String
+  channel   OutreachChannel
+  subject   String?
+  body      String
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@map("outreach_templates")
+}
+
+model Outreach {
+  id         String          @id @default(cuid())
+  leadId     String          @map("lead_id")
+  channel    OutreachChannel
+  status     OutreachStatus  @default(draft)
+  subject    String?
+  body       String
+  templateId String?         @map("template_id")
+  sentAt     DateTime?       @map("sent_at")
+  repliedAt  DateTime?       @map("replied_at")
+  notes      String?
+  createdAt  DateTime        @default(now()) @map("created_at")
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@map("outreaches")
 }
