@@ -1,20 +1,14 @@
 import nodemailer from "nodemailer";
+import { getSmtpConfig } from "./settings";
 
-let _transporter: nodemailer.Transporter | null = null;
-
-function getTransporter() {
-  if (!_transporter) {
-    _transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-  }
-  return _transporter;
+async function getTransporter() {
+  const cfg = await getSmtpConfig();
+  return nodemailer.createTransport({
+    host: cfg.host,
+    port: cfg.port,
+    secure: cfg.secure,
+    auth: { user: cfg.user, pass: cfg.pass },
+  });
 }
 
 export async function sendOutreachEmail({
@@ -30,6 +24,7 @@ export async function sendOutreachEmail({
   fromName?: string;
   cardImageUrl?: string | null;
 }) {
+  const cfg = await getSmtpConfig();
   const cardBlock = cardImageUrl
     ? `<div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee;">
          <p style="color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Ma carte de visite</p>
@@ -38,8 +33,9 @@ export async function sendOutreachEmail({
        </div>`
     : "";
 
-  await getTransporter().sendMail({
-    from: `"${fromName}" <${process.env.SMTP_USER}>`,
+  const t = await getTransporter();
+  await t.sendMail({
+    from: `"${fromName}" <${cfg.user}>`,
     to,
     subject,
     html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}${cardBlock}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg<br><a href="https://www.linkedin.com/in/caroline-charpentier" style="color: #0a66c2; text-decoration: none;">LinkedIn</a> &nbsp;·&nbsp; <a href="https://caroline-finance.com" style="color: #999; text-decoration: none;">caroline-finance.com</a></p></div>`,
@@ -52,10 +48,12 @@ export async function sendMagicLinkEmail(
   token: string,
   name: string
 ) {
+  const cfg = await getSmtpConfig();
   const url = `${process.env.APP_URL}/api/auth/verify?token=${token}`;
 
-  await getTransporter().sendMail({
-    from: `"Caroline Finance" <${process.env.SMTP_USER}>`,
+  const t = await getTransporter();
+  await t.sendMail({
+    from: `"Caroline Finance" <${cfg.user}>`,
     to,
     subject: "Votre lien de connexion — Caroline Finance",
     html: `

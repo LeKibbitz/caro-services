@@ -19,6 +19,7 @@ import {
   CreditCard,
   MessageCircle,
   Truck,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,7 @@ const NAV_ITEMS = [
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/suppliers", label: "Fournisseurs", icon: Truck },
   { href: "/settings/wa", label: "WhatsApp", icon: MessageCircle },
+  { href: "/settings/email", label: "Paramètres email", icon: Mail },
 ];
 
 export function AdminSidebar() {

@@ -369,6 +369,14 @@ model Supplier {
   @@map("suppliers")
 }
 
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}
+
 model Outreach {
   id         String          @id @default(cuid())
   leadId     String          @map("lead_id")

@@ -1,18 +1,16 @@
 import { ImapFlow } from "imapflow";
 import type { getDb } from "./db";
+import { getImapConfig } from "./settings";
 
 export async function syncInboxEmails(
   db: ReturnType<typeof getDb>
 ): Promise<{ synced: number; error?: string }> {
-  const host = process.env.IMAP_HOST;
-  const user = process.env.IMAP_USER;
-  const pass = process.env.IMAP_PASS;
+  const cfg = await getImapConfig();
 
-  if (!host || !user || !pass) {
-    return { synced: 0, error: "IMAP not configured (IMAP_HOST, IMAP_USER, IMAP_PASS)" };
+  if (!cfg.host || !cfg.user || !cfg.pass) {
+    return { synced: 0, error: "IMAP non configuré — renseignez les paramètres dans Paramètres > Email" };
   }
 
-  // Collect messageIds already stored to avoid duplicates
   const existing = await db.message.findMany({
     where: { channel: "email" },
     select: { rawData: true },
@@ -24,10 +22,10 @@ export async function syncInboxEmails(
   );
 
   const client = new ImapFlow({
-    host,
-    port: Number(process.env.IMAP_PORT) || 993,
-    secure: true,
-    auth: { user, pass },
+    host: cfg.host,
+    port: cfg.port,
+    secure: cfg.secure,
+    auth: { user: cfg.user, pass: cfg.pass },
     logger: false,
   });
 
@@ -38,7 +36,6 @@ export async function syncInboxEmails(
     const lock = await client.getMailboxLock("INBOX");
 
     try {
-      // Only fetch messages from the last 30 days
       const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const uids = await client.search({ since }, { uid: true });
 
@@ -80,7 +77,7 @@ export async function syncInboxEmails(
               channel: "email",
               direction: "in",
               fromAddr,
-              toAddr: user,
+              toAddr: cfg.user,
               subject: msg.envelope?.subject ?? null,
               body,
               contactId: contact?.id ?? null,
