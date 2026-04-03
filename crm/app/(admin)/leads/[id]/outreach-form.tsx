@@ -186,12 +186,12 @@ export function OutreachForm({
         />
       </div>
 
-      {/* Business card picker */}
+      {/* Business card picker = signature */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <CreditCard className="h-3 w-3" />
-            Carte de visite
+            Signature — carte de visite
           </p>
           <Link href="/business-cards" className="text-xs text-primary hover:underline flex items-center gap-0.5">
             <Settings className="h-2.5 w-2.5" /> Gérer les favorites

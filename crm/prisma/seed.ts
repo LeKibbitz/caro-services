@@ -101,6 +101,7 @@ async function main() {
   console.log("Facture exemple créée");
 
   // Templates de messages outreach
+  // Principe : la carte de visite = la signature → pas de bloc contact dans le corps
   const templateData = [
     {
       name: "Intro WhatsApp",
@@ -110,14 +111,12 @@ async function main() {
 
 Je me permets de vous contacter au sujet de [Salon].
 
-Spécialisée en fiscalité et comptabilité au Luxembourg, j'accompagne les indépendants et gérants dans leur déclaration TVA, impôts sur le revenu et gestion administrative.
+Je suis spécialisée en comptabilité et fiscalité au Luxembourg — TVA, IR, CCSS — pour les indépendants et gérants. Contact direct, sans intermédiaire.
 
 Seriez-vous disponible pour un échange rapide, sans engagement ?
 
 Bonne journée,
-— Caroline Charpentier
-📞 +352 661 521 101
-🌐 caroline-finance.com`,
+Caroline`,
     },
     {
       name: "Relance WhatsApp",
@@ -125,12 +124,11 @@ Bonne journée,
       subject: null,
       body: `Bonjour [Prénom],
 
-Je me permets de vous relancer suite à mon message précédent concernant [Salon].
+Je me permets de revenir vers vous au sujet de [Salon].
 
-Si vous avez des questions ou souhaitez qu'on échange rapidement sur vos besoins, n'hésitez pas à me répondre ou à m'appeler directement.
+Je reste disponible si vous souhaitez qu'on échange.
 
-Belle journée,
-📞 +352 661 521 101`,
+Bonne journée 🙂`,
     },
     {
       name: "Intro Email",
@@ -140,40 +138,31 @@ Belle journée,
 
 Je me permets de vous contacter au sujet de [Salon].
 
-Spécialisée en comptabilité et fiscalité au Luxembourg, j'accompagne les indépendants et gérants dans leur quotidien administratif : déclaration TVA, impôts sur le revenu, tenue comptable, CCSS...
+Spécialisée en fiscalité et comptabilité au Luxembourg, j'accompagne les indépendants et gérants dans leur quotidien : déclaration TVA, impôts sur le revenu, tenue comptable, CCSS.
 
-Si vous souhaitez qu'on en discute, je suis disponible pour un premier entretien téléphonique sans engagement.
+Seriez-vous disponible pour un échange téléphonique, sans engagement ?
 
 Bien cordialement,
-
-Caroline Charpentier
-Expert-comptable & conseillère fiscale
-
-📞 +352 661 521 101
-📧 contact@caroline-finance.com
-🌐 caroline-finance.com`,
+Caroline`,
     },
     {
       name: "Relance Email",
       channel: "email" as const,
-      subject: "Re: [Salon] — suivi de ma proposition",
+      subject: "Re : [Salon]",
       body: `Bonjour [Prénom],
 
-Je reviens vers vous suite à mon email concernant [Salon], resté sans réponse.
+Je reviens vers vous suite à mon précédent email concernant [Salon].
 
-Je reste disponible pour un échange à votre convenance — n'hésitez pas à me répondre directement ou à me joindre par téléphone.
+Je reste disponible si vous souhaitez en discuter.
 
 Bien cordialement,
-
-Caroline Charpentier
-📞 +352 661 521 101
-🌐 caroline-finance.com`,
+Caroline`,
     },
     {
       name: "Intro SMS",
       channel: "sms" as const,
       subject: null,
-      body: `Bonjour [Prénom], je suis Caroline Charpentier — fiscalité & comptabilité au Luxembourg. Je vous contacte au sujet de [Salon]. Disponible pour un échange ? ☎️ +352 661 521 101`,
+      body: `Bonjour [Prénom], c'est Caroline — comptabilité & fiscalité Luxembourg. Je vous contacte au sujet de [Salon]. Disponible pour en discuter ?`,
     },
   ];
 
