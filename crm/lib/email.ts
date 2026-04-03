@@ -42,7 +42,7 @@ export async function sendOutreachEmail({
     from: `"${fromName}" <${process.env.SMTP_USER}>`,
     to,
     subject,
-    html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}${cardBlock}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg</p></div>`,
+    html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}${cardBlock}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg<br><a href="https://www.linkedin.com/in/caroline-charpentier" style="color: #0a66c2; text-decoration: none;">LinkedIn</a> &nbsp;·&nbsp; <a href="https://caroline-finance.com" style="color: #999; text-decoration: none;">caroline-finance.com</a></p></div>`,
     text: cardImageUrl ? `${body}\n\nCarte de visite : ${cardImageUrl}` : body,
   });
 }

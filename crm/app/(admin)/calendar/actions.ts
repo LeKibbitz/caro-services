@@ -13,6 +13,7 @@ export async function createAppointment(formData: FormData) {
   const title = formData.get("title") as string;
   const description = (formData.get("description") as string) || undefined;
   const contactId = (formData.get("contactId") as string) || undefined;
+  const supplierId = (formData.get("supplierId") as string) || undefined;
   const startAt = new Date(formData.get("startAt") as string);
   const endAt = new Date(formData.get("endAt") as string);
   const location = (formData.get("location") as string) || undefined;
@@ -23,6 +24,7 @@ export async function createAppointment(formData: FormData) {
       title,
       description,
       contactId: contactId || undefined,
+      supplierId: supplierId || undefined,
       userId: user?.id,
       startAt,
       endAt,

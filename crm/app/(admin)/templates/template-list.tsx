@@ -211,15 +211,19 @@ export function TemplateList({ templates }: { templates: Template[] }) {
                           {t.subject && (
                             <div className="text-xs text-muted-foreground mt-0.5">Objet : {t.subject}</div>
                           )}
-                          {t.cardVersion && (
-                            <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                              <CreditCard className="h-3 w-3" />
-                              {CARD_VERSIONS.find((c) => c.id === t.cardVersion)?.name ?? t.cardVersion}
-                            </div>
-                          )}
                           <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 whitespace-pre-line">
                             {t.body}
                           </p>
+                          {t.cardVersion && (
+                            <div className="mt-2">
+                              <img
+                                src={`/cards/${t.cardVersion}.png`}
+                                alt={CARD_VERSIONS.find((c) => c.id === t.cardVersion)?.name ?? t.cardVersion}
+                                className="rounded border border-border"
+                                style={{ width: 200 }}
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="flex gap-1 shrink-0">
                           <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setEditingId(t.id)}>

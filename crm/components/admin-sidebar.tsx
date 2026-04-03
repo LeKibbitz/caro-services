@@ -17,6 +17,8 @@ import {
   Target,
   BookTemplate,
   CreditCard,
+  MessageCircle,
+  Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +39,8 @@ const NAV_ITEMS = [
   { href: "/dossiers", label: "Dossiers", icon: FolderOpen },
   { href: "/calendar", label: "Agenda", icon: Calendar },
   { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/suppliers", label: "Fournisseurs", icon: Truck },
+  { href: "/settings/wa", label: "WhatsApp", icon: MessageCircle },
 ];
 
 export function AdminSidebar() {

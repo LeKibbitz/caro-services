@@ -2,9 +2,9 @@ import { getDb } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Search, Upload, Phone, Mail, User } from "lucide-react";
+import { Plus, Upload, Phone, Mail, User } from "lucide-react";
 import Link from "next/link";
+import { LeadsFilterBar } from "./leads-filter-bar";
 import type { LeadStatus } from "@/lib/generated/prisma/client";
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
@@ -113,41 +113,7 @@ export default async function LeadsPage({
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-4 pb-4">
-          <div className="flex flex-col gap-3">
-            <form className="flex gap-3 items-center">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  name="q"
-                  placeholder="Salon, gérant, adresse..."
-                  defaultValue={q}
-                  className="pl-9"
-                />
-                {status && status !== "all" && (
-                  <input type="hidden" name="status" value={status} />
-                )}
-              </div>
-            </form>
-            <div className="flex flex-wrap gap-1">
-              {STATUSES.map((s) => (
-                <Link
-                  key={s.value}
-                  href={`/leads${s.value !== "all" ? `?status=${s.value}` : ""}${q ? `${s.value !== "all" ? "&" : "?"}q=${q}` : ""}`}
-                >
-                  <Badge
-                    variant={(status || "all") === s.value ? "default" : "secondary"}
-                    className="cursor-pointer text-xs"
-                  >
-                    {s.label}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <LeadsFilterBar q={q} status={status} statuses={STATUSES} />
 
       {/* Table */}
       {leads.length === 0 ? (

@@ -231,6 +231,7 @@ enum AppointmentStatus {
 model Appointment {
   id          String            @id @default(cuid())
   contactId   String?           @map("contact_id")
+  supplierId  String?           @map("supplier_id")
   userId      String?           @map("user_id")
   title       String
   description String?
@@ -242,8 +243,9 @@ model Appointment {
   createdAt   DateTime          @default(now()) @map("created_at")
   updatedAt   DateTime          @updatedAt @map("updated_at")
 
-  contact Contact? @relation(fields: [contactId], references: [id])
-  user    User?    @relation(fields: [userId], references: [id])
+  contact  Contact?  @relation(fields: [contactId], references: [id])
+  supplier Supplier? @relation(fields: [supplierId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
 
   @@map("appointments")
 }
@@ -347,6 +349,24 @@ model OutreachTemplate {
   updatedAt   DateTime        @updatedAt @map("updated_at")
 
   @@map("outreach_templates")
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String
+  contactName String?  @map("contact_name")
+  role        String?
+  email       String?
+  phone       String?
+  website     String?
+  address     String?
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  appointments Appointment[]
+
+  @@map("suppliers")
 }
 
 model Outreach {
