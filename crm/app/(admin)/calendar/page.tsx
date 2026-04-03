@@ -2,8 +2,27 @@ import { getDb } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Clock, MapPin } from "lucide-react";
+import { Plus, Clock, MapPin, CalendarPlus } from "lucide-react";
 import Link from "next/link";
+
+function gcalUrl(apt: {
+  title: string;
+  startAt: Date;
+  endAt: Date;
+  location?: string | null;
+  description?: string | null;
+}) {
+  const fmt = (d: Date) =>
+    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: apt.title,
+    dates: `${fmt(apt.startAt)}/${fmt(apt.endAt)}`,
+    ...(apt.location ? { location: apt.location } : {}),
+    ...(apt.description ? { details: apt.description } : {}),
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 const TYPE_COLORS: Record<string, string> = {
   consultation: "bg-primary/10 text-primary",
@@ -28,7 +47,7 @@ export default async function CalendarPage({
     where: {
       startAt: { gte: startOfMonth, lte: endOfMonth },
     },
-    include: { contact: true },
+    include: { contact: true, supplier: true },
     orderBy: { startAt: "asc" },
   });
 
@@ -38,7 +57,7 @@ export default async function CalendarPage({
       startAt: { gte: now, lte: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) },
       status: "scheduled",
     },
-    include: { contact: true },
+    include: { contact: true, supplier: true },
     orderBy: { startAt: "asc" },
   });
 
@@ -123,6 +142,11 @@ export default async function CalendarPage({
                                 {apt.contact.firstName} {apt.contact.lastName}
                               </span>
                             )}
+                          {apt.supplier && (
+                              <span className="text-xs text-muted-foreground">
+                                {apt.supplier.contactName ?? apt.supplier.name}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -159,6 +183,15 @@ export default async function CalendarPage({
                                 ? "Fait"
                                 : "Annulé"}
                           </Badge>
+                          <a
+                            href={gcalUrl(apt)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ajouter à Google Calendar"
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <CalendarPlus className="h-3.5 w-3.5" />
+                          </a>
                         </div>
                       </CardContent>
                     </Card>
@@ -184,7 +217,18 @@ export default async function CalendarPage({
                 <div className="space-y-3">
                   {upcoming.map((apt) => (
                     <div key={apt.id} className="text-sm">
-                      <div className="font-medium">{apt.title}</div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium">{apt.title}</span>
+                        <a
+                          href={gcalUrl(apt)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Ajouter à Google Calendar"
+                          className="text-muted-foreground hover:text-primary transition-colors shrink-0"
+                        >
+                          <CalendarPlus className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {apt.startAt.toLocaleDateString("fr-FR", {
                           weekday: "short",
@@ -200,6 +244,11 @@ export default async function CalendarPage({
                       {apt.contact && (
                         <div className="text-xs text-muted-foreground">
                           {apt.contact.firstName} {apt.contact.lastName}
+                        </div>
+                      )}
+                      {apt.supplier && (
+                        <div className="text-xs text-muted-foreground">
+                          {apt.supplier.contactName ?? apt.supplier.name}
                         </div>
                       )}
                     </div>
