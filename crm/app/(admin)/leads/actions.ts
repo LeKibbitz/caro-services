@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { sendOutreachEmail } from "@/lib/email";
 import type { LeadStatus, OutreachChannel } from "@/lib/generated/prisma/client";
+import path from "path";
+import fs from "fs";
 
 export async function updateLeadStatus(id: string, status: LeadStatus) {
   const db = getDb();
@@ -19,6 +21,20 @@ export async function updateLeadNotes(id: string, notes: string) {
   revalidatePath(`/leads/${id}`);
 }
 
+const VALID_CARD_VERSIONS = new Set(
+  Array.from({ length: 20 }, (_, i) => `v${i + 1}`)
+);
+
+function getCardImageBase64(version: string): string | null {
+  if (!VALID_CARD_VERSIONS.has(version)) return null;
+  try {
+    const imgPath = path.join(process.cwd(), "public", "cards", `${version}.png`);
+    return fs.readFileSync(imgPath).toString("base64");
+  } catch {
+    return null;
+  }
+}
+
 export async function createOutreach(formData: FormData) {
   const db = getDb();
   const leadId = formData.get("leadId") as string;
@@ -26,15 +42,21 @@ export async function createOutreach(formData: FormData) {
   const subject = (formData.get("subject") as string) || null;
   const body = formData.get("body") as string;
   const sendNow = formData.get("sendNow") === "true";
+  const rawCardVersion = (formData.get("cardVersion") as string) || null;
+  const cardVersion = rawCardVersion && VALID_CARD_VERSIONS.has(rawCardVersion) ? rawCardVersion : null;
 
   if (!leadId || !channel || !body) throw new Error("Champs requis manquants.");
+
+  const bodyWithCard = cardVersion
+    ? body + `\n\n📎 Carte de visite : ${process.env.APP_URL ?? "https://crm.caroline-finance.com"}/cards/${cardVersion}.png`
+    : body;
 
   const outreach = await db.outreach.create({
     data: {
       leadId,
       channel,
       subject,
-      body,
+      body: bodyWithCard,
       status: sendNow ? "sent" : "draft",
       sentAt: sendNow ? new Date() : null,
     },
@@ -42,11 +64,15 @@ export async function createOutreach(formData: FormData) {
   });
 
   if (sendNow && channel === "email" && outreach.lead.email) {
+    const cardUrl = cardVersion
+      ? `${process.env.APP_URL ?? "https://crm.caroline-finance.com"}/cards/${cardVersion}.png`
+      : null;
     await sendOutreachEmail({
       to: outreach.lead.email,
       subject: subject ?? `Contact — ${outreach.lead.salonName}`,
       body,
       fromName: "Caroline Finance",
+      cardImageUrl: cardUrl,
     });
   }
 
@@ -55,11 +81,30 @@ export async function createOutreach(formData: FormData) {
     const bridgeUrl = process.env.WA_BRIDGE_URL;
     const bridgeToken = process.env.WA_BRIDGE_TOKEN;
     if (bridgeUrl && bridgeToken) {
+      // Send text message
       await fetch(bridgeUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: bridgeToken, to: waPhone, message: body }),
-      }).catch(() => {}); // silent fail — message saved as "sent" regardless
+      }).catch(() => {});
+
+      // Send card image if selected
+      if (cardVersion) {
+        const imageBase64 = getCardImageBase64(cardVersion);
+        if (imageBase64) {
+          await fetch(bridgeUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: bridgeToken,
+              to: waPhone,
+              image_base64: imageBase64,
+              image_mimetype: "image/png",
+              caption: "Ma carte de visite",
+            }),
+          }).catch(() => {});
+        }
+      }
     }
   }
 

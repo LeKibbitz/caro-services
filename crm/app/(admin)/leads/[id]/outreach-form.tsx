@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Send, FileText, Mail, MessageCircle, Smartphone, CreditCard, ExternalLink } from "lucide-react";
+import { Send, FileText, Mail, MessageCircle, Smartphone, CreditCard, Settings } from "lucide-react";
 import { createOutreach } from "../actions";
 import type { OutreachChannel } from "@/lib/generated/prisma/client";
 
@@ -19,28 +20,13 @@ const CHANNELS: ChannelConfig[] = [
   { value: "sms", label: "SMS", icon: <Smartphone className="h-3.5 w-3.5" /> },
 ];
 
-const CARD_VERSIONS = [
-  { id: "v1", name: "V1 Signature" },
-  { id: "v2", name: "V2 Bande latérale" },
-  { id: "v3", name: "V3 Dark élégante" },
-  { id: "v4", name: "V4 Bicolore" },
-  { id: "v5", name: "V5 Orange bold" },
-  { id: "v6", name: "V6 Géométrique" },
-  { id: "v7", name: "V7 Ligne fine" },
-  { id: "v8", name: "V8 Shadow" },
-  { id: "v9", name: "V9 Gradient" },
-  { id: "v10", name: "V10 Typo" },
-  { id: "v11", name: "V11 Arrondi XL" },
-  { id: "v12", name: "V12 Dégradé orange" },
-  { id: "v13", name: "V13 Sombre orange" },
-  { id: "v14", name: "V14 Bordure" },
-  { id: "v15", name: "V15 Texturée" },
-  { id: "v16", name: "V16 Diagonal" },
-  { id: "v17", name: "V17 Initiales" },
-  { id: "v18", name: "V18 Carré central" },
-  { id: "v19", name: "V19 Compact" },
-  { id: "v20", name: "V20 Premium noir" },
-];
+const CARD_NAMES: Record<string, string> = {
+  v1: "V1 Signature", v2: "V2 Bande latérale", v3: "V3 Dark élégante", v4: "V4 Bicolore",
+  v5: "V5 Orange bold", v6: "V6 Géométrique", v7: "V7 Ligne fine", v8: "V8 Shadow",
+  v9: "V9 Gradient", v10: "V10 Typo", v11: "V11 Arrondi XL", v12: "V12 Dégradé orange",
+  v13: "V13 Sombre orange", v14: "V14 Bordure", v15: "V15 Texturée", v16: "V16 Diagonal",
+  v17: "V17 Initiales", v18: "V18 Carré central", v19: "V19 Compact", v20: "V20 Premium noir",
+};
 
 function applyVariables(text: string, salonName: string, ownerName: string | null) {
   const firstName = ownerName ? ownerName.split(" ")[0] : "";
@@ -71,6 +57,7 @@ export function OutreachForm({
   const [sent, setSent] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("/api/templates")
@@ -84,6 +71,10 @@ export function OutreachForm({
         }
       })
       .catch(() => {});
+    try {
+      const stored = localStorage.getItem("cardFavorites");
+      if (stored) setFavorites(JSON.parse(stored));
+    } catch {}
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const channelTemplates = templates.filter((t) => t.channel === channel);
@@ -112,11 +103,9 @@ export function OutreachForm({
     fd.set("leadId", leadId);
     fd.set("channel", channel);
     fd.set("subject", subject);
-    const finalBody = selectedCard
-      ? body + `\n\n📎 Carte de visite jointe — ${CARD_VERSIONS.find((c) => c.id === selectedCard)?.name}`
-      : body;
-    fd.set("body", finalBody);
+    fd.set("body", body);
     fd.set("sendNow", String(sendNow));
+    if (selectedCard) fd.set("cardVersion", selectedCard);
     startTransition(async () => {
       await createOutreach(fd);
       setSent(true);
@@ -202,49 +191,58 @@ export function OutreachForm({
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <CreditCard className="h-3 w-3" />
-            Carte de visite à joindre
+            Carte de visite
           </p>
-          <a
-            href="/cartes-de-visite.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-primary hover:underline flex items-center gap-0.5"
-          >
-            Voir toutes <ExternalLink className="h-2.5 w-2.5" />
-          </a>
+          <Link href="/business-cards" className="text-xs text-primary hover:underline flex items-center gap-0.5">
+            <Settings className="h-2.5 w-2.5" /> Gérer les favorites
+          </Link>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => setSelectedCard(null)}
-            className={`px-2.5 py-1 rounded text-xs border transition-colors ${
-              !selectedCard
-                ? "border-border bg-muted text-muted-foreground"
-                : "border-transparent text-muted-foreground hover:border-border"
-            }`}
-          >
-            Aucune
-          </button>
-          {CARD_VERSIONS.map((card) => (
+        {favorites.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic">
+            <Link href="/business-cards" className="text-primary hover:underline">Sélectionnez des cartes favorites</Link>{" "}
+            pour les voir ici en accès rapide
+          </p>
+        ) : (
+          <div className="flex items-end gap-2 flex-wrap">
             <button
-              key={card.id}
               type="button"
-              onClick={() => setSelectedCard(card.id)}
-              className={`px-2.5 py-1 rounded text-xs border transition-colors ${
-                selectedCard === card.id
-                  ? "border-primary bg-primary/10 text-primary font-medium"
-                  : "border-border text-muted-foreground hover:border-muted-foreground/50"
+              onClick={() => setSelectedCard(null)}
+              className={`px-2 py-1 rounded text-xs border transition-colors self-center ${
+                !selectedCard
+                  ? "border-border bg-muted text-muted-foreground"
+                  : "border-transparent text-muted-foreground hover:border-border"
               }`}
             >
-              {card.name}
+              Aucune
             </button>
-          ))}
-        </div>
-        {selectedCard && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2.5 py-1.5">
-            Pensez à joindre manuellement la capture d'écran de la carte{" "}
-            <span className="font-medium">{CARD_VERSIONS.find((c) => c.id === selectedCard)?.name}</span>
-          </p>
+            {favorites.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSelectedCard(id)}
+                title={CARD_NAMES[id]}
+                className={`relative rounded-md overflow-hidden border-2 transition-all ${
+                  selectedCard === id
+                    ? "border-primary shadow-md shadow-primary/20"
+                    : "border-border hover:border-primary/50"
+                }`}
+              >
+                <img src={`/cards/${id}.png`} alt={CARD_NAMES[id]} className="h-16 w-auto block" />
+                {selectedCard === id && (
+                  <div className="absolute inset-0 bg-primary/10" />
+                )}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 py-0.5 text-center text-[10px] font-medium ${
+                    selectedCard === id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-black/40 text-white"
+                  }`}
+                >
+                  {CARD_NAMES[id]}
+                </div>
+              </button>
+            ))}
+          </div>
         )}
       </div>
 

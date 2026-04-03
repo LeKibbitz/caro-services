@@ -22,18 +22,28 @@ export async function sendOutreachEmail({
   subject,
   body,
   fromName = "Caroline Finance",
+  cardImageUrl,
 }: {
   to: string;
   subject: string;
   body: string;
   fromName?: string;
+  cardImageUrl?: string | null;
 }) {
+  const cardBlock = cardImageUrl
+    ? `<div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee;">
+         <p style="color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Ma carte de visite</p>
+         <img src="${cardImageUrl}" alt="Carte de visite Caroline Charpentier"
+              style="width: 340px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);" />
+       </div>`
+    : "";
+
   await getTransporter().sendMail({
     from: `"${fromName}" <${process.env.SMTP_USER}>`,
     to,
     subject,
-    html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/\n/g, "<br>")}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg</p></div>`,
-    text: body,
+    html: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; color: #1a1a2e;">${body.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}${cardBlock}<hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" /><p style="color: #999; font-size: 12px;">Caroline Finance — Fiscalité &amp; Comptabilité Luxembourg</p></div>`,
+    text: cardImageUrl ? `${body}\n\nCarte de visite : ${cardImageUrl}` : body,
   });
 }
 

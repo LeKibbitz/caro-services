@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import { getDb } from "@/lib/db";
 import { randomBytes } from "crypto";
+import { rateLimit } from "@/lib/rate-limit";
 
 const SESSION_EXPIRY_DAYS = 30;
-const BASE_URL = process.env.APP_URL || "https://crm.caroline-finance.com";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    if (!rateLimit(`password-login:${ip}`, 10, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Réessayez dans 15 minutes." },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await req.json();
 
     if (!email || !password) {
