@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Raleway } from "next/font/google";
+import { Inter_Tight } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
-const raleway = Raleway({
-  variable: "--font-raleway",
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${raleway.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${interTight.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
