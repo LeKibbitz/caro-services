@@ -50,19 +50,46 @@ JOB_ID = os.environ.get("JOB_ID", "")
 # Browser
 # ---------------------------------------------------------------------------
 
-def launch_browser(pw, headless=True):
-    """Launch Chromium with persistent profile (Cloudflare bypass)."""
+def launch_browser(pw, headless=True, use_chrome=False, cdp_url=None):
+    """Launch browser or connect to existing Chrome via CDP.
+
+    cdp_url: connect to a running Chrome (e.g. http://localhost:9222).
+             Requires Chrome launched with: --remote-debugging-port=9222
+             This is the best way to bypass Cloudflare — you solve the
+             captcha once in your real Chrome, then the scraper reuses
+             that session.
+
+    use_chrome: use system Chrome with persistent profile.
+    """
     print("Lancement du navigateur...")
-    ctx = pw.chromium.launch_persistent_context(
-        PROFILE_DIR,
+
+    if cdp_url:
+        # Connect to existing Chrome session — bypasses Cloudflare
+        print(f"  Connexion au Chrome existant via CDP: {cdp_url}")
+        browser = pw.chromium.connect_over_cdp(cdp_url)
+        ctx = browser.contexts[0] if browser.contexts else browser.new_context()
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        return ctx, page
+
+    kwargs = dict(
+        user_data_dir=PROFILE_DIR,
         headless=headless,
         viewport={"width": 1400, "height": 900},
         args=["--disable-blink-features=AutomationControlled"],
         user_agent=(
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
         ),
     )
+    if use_chrome:
+        ctx = pw.chromium.launch_persistent_context(
+            channel="chrome",
+            **kwargs,
+        )
+    else:
+        ctx = pw.chromium.launch_persistent_context(
+            **kwargs,
+        )
     page = ctx.pages[0] if ctx.pages else ctx.new_page()
     return ctx, page
 
@@ -183,26 +210,73 @@ def scrape_topic_content(page, url):
         return None
 
 
-def click_page(page, page_num):
-    """Click a pagination link to navigate to a specific page (AJAX pagination)."""
+def dismiss_overlays(page):
+    """Close cookie consent, OneSignal, and other overlays that block clicks."""
+    # Cookie consent (Fundingchoices / CMP)
+    for sel in [
+        'button.fc-cta-consent',          # "J'accepte" button
+        'button[aria-label="Consent"]',
+        '.fc-button.fc-cta-consent',
+        '.fc-dialog .fc-cta-consent',
+        'button.fc-primary-button',
+    ]:
+        try:
+            btn = page.query_selector(sel)
+            if btn and btn.is_visible():
+                btn.click()
+                page.wait_for_timeout(1000)
+                print("  [info] Cookie consent dismissed")
+                break
+        except Exception:
+            pass
+
+    # OneSignal push notification popup
+    for sel in [
+        '#onesignal-slidedown-cancel-button',
+        'button[id*="onesignal"][id*="cancel"]',
+        '.onesignal-slidedown-dialog .secondary',
+    ]:
+        try:
+            btn = page.query_selector(sel)
+            if btn and btn.is_visible():
+                btn.click()
+                page.wait_for_timeout(500)
+                print("  [info] OneSignal popup dismissed")
+                break
+        except Exception:
+            pass
+
+    # Generic close buttons on remaining overlays
+    for sel in ['.fc-close', '[aria-label="close"]', '.popup-close']:
+        try:
+            btn = page.query_selector(sel)
+            if btn and btn.is_visible():
+                btn.click()
+                page.wait_for_timeout(500)
+        except Exception:
+            pass
+
+
+def navigate_to_page(page, base_url, page_num):
+    """Navigate to forum page N. Uses URL reload (most reliable with CDP)."""
+    dismiss_overlays(page)
     try:
-        link = page.query_selector(f'.custom-paginator .paginator-link.number[data-page="{page_num}"]')
-        if link:
-            link.click()
-            page.wait_for_timeout(3000)
-            return True
-        # Try clicking "next" arrow
-        next_link = page.query_selector(f'.paginator-link[data-page="{page_num}"]')
-        if next_link:
-            next_link.click()
-            page.wait_for_timeout(3000)
-            return True
+        # wpForo pagination: reload with ?paged=N or /page/N
+        target_url = f"{base_url}?paged={page_num}" if "?" not in base_url else f"{base_url}&paged={page_num}"
+        page.goto(target_url, timeout=60000)
+        page.wait_for_timeout(2000)
+        dismiss_overlays(page)
+        try:
+            page.wait_for_selector(".topic-listing-element", timeout=10000)
+        except PWTimeout:
+            pass
+        return True
     except Exception as e:
-        print(f"  [warn] Pagination click failed: {e}")
-    return False
+        print(f"  [warn] Navigation page {page_num} failed: {e}")
+        return False
 
 
-def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True):
+def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True, use_chrome=False, cdp_url=None):
     """Scrape forum topics for a given category."""
     url = f"{BASE_URL}/forum/{category_slug}/"
     print(f"\n{'='*60}")
@@ -214,11 +288,31 @@ def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True)
     report_progress(status="running", phase=f"Forum {category_slug}", total=max_pages)
 
     with sync_playwright() as pw:
-        ctx, page = launch_browser(pw, headless=headless)
+        ctx, page = launch_browser(pw, headless=headless, use_chrome=use_chrome, cdp_url=cdp_url)
 
         try:
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_timeout(3000)
+            page.goto(url, timeout=120000)
+            # Wait for forum content or Cloudflare challenge
+            for attempt in range(3):
+                try:
+                    page.wait_for_selector(".topic-listing-element", timeout=15000)
+                    break
+                except PWTimeout:
+                    # Check if Cloudflare challenge is present
+                    cf = page.query_selector("#challenge-running, #cf-challenge-running, .cf-browser-verification, iframe[src*='challenge']")
+                    if cf or attempt == 0:
+                        print("\n  ⏳ Cloudflare détecté — résous le captcha dans la fenêtre Chrome.")
+                        print("     Appuie sur ENTRÉE ici quand c'est fait...")
+                        if not headless:
+                            input()
+                            page.wait_for_timeout(3000)
+                        else:
+                            page.wait_for_timeout(30000)
+                    else:
+                        print("  [warn] Topics non chargés, on continue...")
+                        break
+            dismiss_overlays(page)
+            page.wait_for_timeout(1000)
 
             for page_num in range(1, max_pages + 1):
                 print(f"\n--- Page {page_num}/{max_pages} ---")
@@ -248,17 +342,12 @@ def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True)
                             content = scrape_topic_content(page, t["url"])
                             t["summary"] = content
                             time.sleep(DELAYS["between_topics"])
-                    # Navigate back to forum listing
-                    page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                    page.wait_for_timeout(3000)
-                    # Navigate to correct page
-                    if page_num > 1:
-                        for p in range(2, page_num + 1):
-                            click_page(page, p)
+                    # Navigate back to the correct page after fetching content
+                    navigate_to_page(page, url, page_num)
 
                 # Navigate to next page
                 if page_num < max_pages:
-                    if not click_page(page, page_num + 1):
+                    if not navigate_to_page(page, url, page_num + 1):
                         print("  Pas de page suivante, arrêt.")
                         break
                     time.sleep(DELAYS["between_pages"])
@@ -298,7 +387,7 @@ def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True)
 # Annonces scraper
 # ---------------------------------------------------------------------------
 
-def scrape_annonces(max_pages=8, headless=True):
+def scrape_annonces(max_pages=8, headless=True, use_chrome=False, cdp_url=None):
     """Scrape petites annonces."""
     url = f"{BASE_URL}{CONFIG['annonces_url']}"
     print(f"\n{'='*60}")
@@ -310,10 +399,11 @@ def scrape_annonces(max_pages=8, headless=True):
     report_progress(status="running", phase="Petites annonces", total=max_pages)
 
     with sync_playwright() as pw:
-        ctx, page = launch_browser(pw, headless=headless)
+        ctx, page = launch_browser(pw, headless=headless, use_chrome=use_chrome, cdp_url=cdp_url)
         try:
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
             page.wait_for_timeout(3000)
+            dismiss_overlays(page)
 
             for page_num in range(1, max_pages + 1):
                 print(f"\n--- Page {page_num}/{max_pages} ---")
@@ -452,6 +542,8 @@ def main():
     parser.add_argument("--with-content", action="store_true", help="Also fetch full topic content")
     parser.add_argument("--push", action="store_true", help="Push results to CRM API")
     parser.add_argument("--no-headless", action="store_true", help="Show browser window")
+    parser.add_argument("--chrome", action="store_true", help="Use system Chrome (better for Cloudflare)")
+    parser.add_argument("--cdp", default=None, help="Connect to running Chrome via CDP (e.g. http://localhost:9222)")
     parser.add_argument("--job-id", help="CRM ScrapeJob ID (for progress reporting)")
     parser.add_argument("--config", help="JSON config string from CRM")
     args = parser.parse_args()
@@ -474,15 +566,17 @@ def main():
             pass
 
     headless = not args.no_headless
+    use_chrome = args.chrome
+    cdp_url = args.cdp
     all_leads = []
 
     if args.forum:
-        leads = scrape_forum(args.category, max_pages=args.max_pages, with_content=args.with_content, headless=headless)
+        leads = scrape_forum(args.category, max_pages=args.max_pages, with_content=args.with_content, headless=headless, use_chrome=use_chrome, cdp_url=cdp_url)
         all_leads.extend(leads)
         save_json(leads, suffix=f"forum-{args.category}")
 
     if args.annonces:
-        leads = scrape_annonces(max_pages=args.max_pages, headless=headless)
+        leads = scrape_annonces(max_pages=args.max_pages, headless=headless, use_chrome=use_chrome, cdp_url=cdp_url)
         all_leads.extend(leads)
         save_json(leads, suffix="annonces")
 
