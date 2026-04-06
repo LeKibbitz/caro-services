@@ -23,23 +23,23 @@ const CHANNELS: ChannelConfig[] = [
 
 const CARD_NAMES = Object.fromEntries(CARD_VERSIONS.map((c) => [c.id, c.name]));
 
-function applyVariables(text: string, salonName: string, ownerName: string | null) {
+function applyVariables(text: string, displayName: string, ownerName: string | null) {
   const firstName = ownerName ? ownerName.split(" ")[0] : "";
   return text
     .replace(/\[Prénom\]/g, firstName)
     .replace(/\[Nom\]/g, ownerName ?? "")
-    .replace(/\[Salon\]/g, salonName);
+    .replace(/\[Salon\]/g, displayName);
 }
 
 export function OutreachForm({
   leadId,
-  salonName,
+  displayName,
   ownerName,
   hasEmail,
   hasPhone,
 }: {
   leadId: string;
-  salonName: string;
+  displayName: string;
   ownerName: string | null;
   hasEmail: boolean;
   hasPhone: boolean;
@@ -62,8 +62,8 @@ export function OutreachForm({
         setTemplates(data);
         const first = (data as Template[]).find((t) => t.channel === channel);
         if (first && !body) {
-          setSubject(applyVariables(first.subject ?? "", salonName, ownerName));
-          setBody(applyVariables(first.body, salonName, ownerName));
+          setSubject(applyVariables(first.subject ?? "", displayName, ownerName));
+          setBody(applyVariables(first.body, displayName, ownerName));
           if (first.cardVersion) setSelectedCard(first.cardVersion);
         }
       })
@@ -77,8 +77,8 @@ export function OutreachForm({
   const channelTemplates = templates.filter((t) => t.channel === channel);
 
   function applyTemplate(t: Template) {
-    setSubject(applyVariables(t.subject ?? "", salonName, ownerName));
-    setBody(applyVariables(t.body, salonName, ownerName));
+    setSubject(applyVariables(t.subject ?? "", displayName, ownerName));
+    setBody(applyVariables(t.body, displayName, ownerName));
     setSelectedCard(t.cardVersion ?? null);
   }
 
@@ -86,8 +86,8 @@ export function OutreachForm({
     setChannel(newChannel);
     const first = templates.find((t) => t.channel === newChannel);
     if (first) {
-      setSubject(applyVariables(first.subject ?? "", salonName, ownerName));
-      setBody(applyVariables(first.body, salonName, ownerName));
+      setSubject(applyVariables(first.subject ?? "", displayName, ownerName));
+      setBody(applyVariables(first.body, displayName, ownerName));
       setSelectedCard(first.cardVersion ?? null);
     } else {
       setSubject("");

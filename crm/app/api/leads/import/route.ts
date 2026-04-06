@@ -14,10 +14,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let salons: unknown[];
+  let items: unknown[];
   try {
-    salons = await req.json();
-    if (!Array.isArray(salons)) throw new Error("Expected array");
+    items = await req.json();
+    if (!Array.isArray(items)) throw new Error("Expected array");
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
@@ -27,14 +27,23 @@ export async function POST(req: NextRequest) {
   let updated = 0;
   let skipped = 0;
 
-  for (const raw of salons) {
+  for (const raw of items) {
     const s = raw as Record<string, unknown>;
-    const salonName = (s.name as string | undefined)?.trim();
-    if (!salonName) { skipped++; continue; }
+    const leadType = (s.lead_type as string) || "business";
+
+    // For forum leads, displayName = topic title or username
+    // For business leads, displayName = salon/business name
+    const displayName = (
+      (s.name as string | undefined) ??
+      (s.display_name as string | undefined) ??
+      (s.topic_title as string | undefined)
+    )?.trim();
+    if (!displayName) { skipped++; continue; }
 
     const address = (s.address as string | undefined)?.trim() || null;
 
-    const data = {
+    // Common fields (business leads)
+    const businessData = {
       phone: (s.phone as string | undefined)?.trim() || null,
       phones: Array.isArray(s.phones) && s.phones.length ? s.phones : undefined,
       email: (s.email as string | undefined)?.trim() || null,
@@ -49,37 +58,76 @@ export async function POST(req: NextRequest) {
       websiteUrl: (s.website_url as string | undefined) || null,
       sourceUrl: (s.source_url as string | undefined) || null,
       reviewsCount: typeof s.reviews_count === "number" ? s.reviews_count : null,
-      source: "salonkee",
+      source: (s.source as string | undefined) || "salonkee",
+    };
+
+    // Forum/annonce specific fields
+    const forumData = {
+      forumUsername: (s.username as string | undefined) || null,
+      topicTitle: (s.topic_title as string | undefined) || null,
+      topicUrl: (s.topic_url as string | undefined) || null,
+      topicCategory: (s.topic_category as string | undefined) || null,
+      topicDate: s.topic_date ? new Date(s.topic_date as string) : null,
+      replyCount: typeof s.reply_count === "number" ? s.reply_count : null,
+      viewCount: typeof s.view_count === "number" ? s.view_count : null,
+      aiSummary: (s.summary as string | undefined) || null,
     };
 
     try {
-      const existing = await db.lead.findFirst({
-        where: { salonName, address: address ?? undefined },
-      });
+      if (leadType === "forum" || leadType === "annonce") {
+        // Forum/annonce leads: deduplicate by topicUrl
+        const topicUrl = forumData.topicUrl;
+        const existing = topicUrl
+          ? await db.lead.findFirst({ where: { topicUrl } })
+          : null;
 
-      if (existing) {
-        // Only update enrichment fields if we have better data
-        await db.lead.update({
-          where: { id: existing.id },
-          data: {
-            ...data,
-            // Don't overwrite if already converted/qualified
-            ...(existing.status === "new" && data.phone
-              ? { phone: data.phone }
-              : {}),
-          },
-        });
-        updated++;
+        if (existing) {
+          await db.lead.update({
+            where: { id: existing.id },
+            data: { ...businessData, ...forumData, leadType },
+          });
+          updated++;
+        } else {
+          await db.lead.create({
+            data: {
+              displayName,
+              address,
+              leadType,
+              ...businessData,
+              ...forumData,
+            },
+          });
+          created++;
+        }
       } else {
-        await db.lead.create({
-          data: { salonName, address, ...data },
+        // Business leads: deduplicate by displayName + address
+        const existing = await db.lead.findFirst({
+          where: { displayName, address: address ?? undefined },
         });
-        created++;
+
+        if (existing) {
+          await db.lead.update({
+            where: { id: existing.id },
+            data: {
+              ...businessData,
+              leadType,
+              ...(existing.status === "new" && businessData.phone
+                ? { phone: businessData.phone }
+                : {}),
+            },
+          });
+          updated++;
+        } else {
+          await db.lead.create({
+            data: { displayName, address, leadType, ...businessData },
+          });
+          created++;
+        }
       }
     } catch {
       skipped++;
     }
   }
 
-  return NextResponse.json({ created, updated, skipped, total: salons.length });
+  return NextResponse.json({ created, updated, skipped, total: items.length });
 }

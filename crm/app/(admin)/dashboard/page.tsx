@@ -2,14 +2,15 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, FileText, Receipt, FolderOpen, Target, Send } from "lucide-react";
+import { Users, FileText, Receipt, FolderOpen, Target, Send, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardPage() {
   const user = await getSession();
   const db = getDb();
 
-  const [contactsCount, quotesCount, invoicesCount, dossiersCount, leadsCount, outreachSentCount] =
+  const currentYear = new Date().getFullYear();
+  const [contactsCount, quotesCount, invoicesCount, dossiersCount, leadsCount, outreachSentCount, caAnnuel] =
     await Promise.all([
       db.contact.count(),
       db.quote.count(),
@@ -17,14 +18,22 @@ export default async function DashboardPage() {
       db.dossier.count(),
       db.lead.count(),
       db.outreach.count({ where: { status: "sent" } }),
+      db.invoice.aggregate({
+        where: {
+          status: { not: "cancelled" },
+          createdAt: { gte: new Date(`${currentYear}-01-01`), lt: new Date(`${currentYear + 1}-01-01`) },
+        },
+        _sum: { total: true },
+      }),
     ]);
+  const caAnnuelValue = Math.round(Number(caAnnuel._sum.total ?? 0));
 
   const [recentOutreaches, pendingDossiers, unpaidInvoices] = await Promise.all([
     db.outreach.findMany({
       where: { status: "sent" },
       orderBy: { sentAt: "desc" },
       take: 5,
-      include: { lead: { select: { salonName: true, id: true } } },
+      include: { lead: { select: { displayName: true, id: true } } },
     }),
     db.dossier.findMany({
       where: { status: { not: "done" } },
@@ -48,13 +57,14 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
         <StatCard title="Clients" value={contactsCount} icon={<Users className="h-4 w-4" />} href="/contacts" />
         <StatCard title="Leads" value={leadsCount} icon={<Target className="h-4 w-4" />} href="/leads" />
         <StatCard title="Envois" value={outreachSentCount} icon={<Send className="h-4 w-4" />} href="/leads" />
         <StatCard title="Devis" value={quotesCount} icon={<FileText className="h-4 w-4" />} href="/quotes" />
         <StatCard title="Factures" value={invoicesCount} icon={<Receipt className="h-4 w-4" />} href="/invoices" />
         <StatCard title="Dossiers" value={dossiersCount} icon={<FolderOpen className="h-4 w-4" />} href="/dossiers" />
+        <StatCard title={`CA ${currentYear} (€)`} value={caAnnuelValue} icon={<TrendingUp className="h-4 w-4" />} href="/invoices?tab=ca" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -74,7 +84,7 @@ export default async function DashboardPage() {
                 {recentOutreaches.map((o) => (
                   <Link key={o.id} href={`/leads/${o.lead.id}`} className="flex items-center justify-between text-sm hover:text-primary transition-colors">
                     <div>
-                      <span className="font-medium">{o.lead.salonName}</span>
+                      <span className="font-medium">{o.lead.displayName}</span>
                       <span className="text-muted-foreground ml-2 text-xs">via {o.channel}</span>
                     </div>
                     <span className="text-xs text-muted-foreground">

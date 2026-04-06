@@ -7,6 +7,8 @@ services:
       POSTGRES_USER: caro_crm
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: caro_crm
+    ports:
+      - "5433:5432"
     volumes:
       - caro-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -31,6 +33,8 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       WA_BRIDGE_URL: ${WA_BRIDGE_URL}
       WA_BRIDGE_TOKEN: ${WA_BRIDGE_TOKEN}
+      WA_BRIDGE_INTERNAL: ${WA_BRIDGE_INTERNAL}
+      INBOX_WA_TOKEN: ${INBOX_WA_TOKEN}
     depends_on:
       caro-db:
         condition: service_healthy
@@ -42,6 +46,18 @@ services:
       - "traefik.http.services.caro-crm.loadbalancer.server.port=3010"
       - "traefik.http.routers.caro-crm-http.rule=Host(`crm.caroline-finance.com`)"
       - "traefik.http.routers.caro-crm-http.entrypoints=web"
+    networks:
+      - caro-net
+
+  caro-scraper:
+    build:
+      context: ../tools
+      dockerfile: Dockerfile.scraper
+    container_name: caro-scraper
+    restart: unless-stopped
+    environment:
+      CRM_URL: http://caro-crm:3010
+      CRM_TOKEN: ${LEADS_IMPORT_TOKEN}
     networks:
       - caro-net
 

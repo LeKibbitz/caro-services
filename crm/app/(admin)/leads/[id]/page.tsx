@@ -5,13 +5,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, Phone, Mail, MapPin, User, ExternalLink,
-  Building2, Hash, Linkedin, Clock, MessageSquare, CheckCircle2, MessageCircle,
+  Building2, Hash, Linkedin, Clock, MessageSquare, CheckCircle2, MessageCircle, Pencil, FileText,
 } from "lucide-react";
 import Link from "next/link";
-import { LeadStatusSelect } from "./lead-status-select";
+import { LeadStatusSelect } from "@/components/lead-status-select";
 import { OutreachForm } from "./outreach-form";
 import { ConvertButton } from "./convert-button";
 import { EnrichButton } from "./enrich-button";
+import { OutreachStatusSelect } from "./outreach-status-select";
+import { RunWorkflowButton } from "./run-workflow-button";
+import { getWorkflows } from "@/lib/workflows";
+import { DeleteButton } from "@/components/delete-button";
+import { deleteLead } from "../actions";
 import type { LeadStatus, OutreachChannel, OutreachStatus } from "@/lib/generated/prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -19,8 +24,8 @@ import { fr } from "date-fns/locale";
 const STATUS_LABELS: Record<LeadStatus, string> = {
   new: "Nouveau",
   contacted: "Contacté",
-  replied: "Répondu",
-  qualified: "Qualifié",
+  replied: "Contacté",
+  qualified: "Contacté",
   lost: "Perdu",
   converted: "Converti",
 };
@@ -53,13 +58,16 @@ export default async function LeadDetailPage({
   const { id } = await params;
   const db = getDb();
 
-  const lead = await db.lead.findUnique({
-    where: { id },
-    include: {
-      outreaches: { orderBy: { createdAt: "desc" } },
-      contact: { select: { id: true, firstName: true, lastName: true } },
-    },
-  });
+  const [lead, workflows] = await Promise.all([
+    db.lead.findUnique({
+      where: { id },
+      include: {
+        outreaches: { orderBy: { createdAt: "desc" } },
+        contact: { select: { id: true, firstName: true, lastName: true } },
+      },
+    }),
+    getWorkflows(),
+  ]);
 
   if (!lead) notFound();
 
@@ -74,7 +82,7 @@ export default async function LeadDetailPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{lead.salonName}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{lead.displayName}</h1>
             {lead.address && (
               <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
                 <MapPin className="h-3.5 w-3.5" />
@@ -85,18 +93,38 @@ export default async function LeadDetailPage({
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
+          <RunWorkflowButton leadId={lead.id} workflows={workflows} />
+          <Link href={`/leads/${lead.id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-3.5 w-3.5 mr-1" />
+              Modifier
+            </Button>
+          </Link>
           <EnrichButton leadId={lead.id} />
           {lead.status !== "converted" && (
             <ConvertButton leadId={lead.id} />
           )}
           {lead.contact && (
-            <Link href={`/contacts/${lead.contact.id}`}>
-              <Button variant="outline" size="sm">
-                <CheckCircle2 className="h-4 w-4 mr-1 text-emerald-600" />
-                Voir contact
-              </Button>
-            </Link>
+            <>
+              <Link href={`/contacts/${lead.contact.id}`}>
+                <Button variant="outline" size="sm">
+                  <CheckCircle2 className="h-4 w-4 mr-1 text-emerald-600" />
+                  Voir contact
+                </Button>
+              </Link>
+              <Link href={`/quotes/new?leadId=${lead.id}`}>
+                <Button variant="outline" size="sm">
+                  <FileText className="h-4 w-4 mr-1" />
+                  Créer un devis
+                </Button>
+              </Link>
+            </>
           )}
+          <DeleteButton
+            onDelete={deleteLead.bind(null, lead.id)}
+            redirectTo="/leads"
+            confirmMessage={`Supprimer le lead "${lead.displayName}" ? Cette action est irréversible.`}
+          />
         </div>
       </div>
 
@@ -273,7 +301,7 @@ export default async function LeadDetailPage({
           <CardContent>
             <OutreachForm
               leadId={lead.id}
-              salonName={lead.salonName}
+              displayName={lead.displayName}
               ownerName={lead.ownerName}
               hasEmail={!!lead.email}
               hasPhone={!!lead.phone}
@@ -298,12 +326,10 @@ export default async function LeadDetailPage({
                     <Badge variant="outline" className="text-xs">
                       {CHANNEL_LABELS[o.channel]}
                     </Badge>
-                    <Badge
-                      variant={o.status === "sent" ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      {OUTREACH_STATUS_LABELS[o.status]}
-                    </Badge>
+                    <OutreachStatusSelect
+                      outreachId={o.id}
+                      currentStatus={o.status}
+                    />
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {format(o.createdAt, "d MMM yyyy à HH:mm", { locale: fr })}

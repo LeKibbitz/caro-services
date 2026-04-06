@@ -306,8 +306,9 @@ enum OutreachStatus {
 
 model Lead {
   id              String     @id @default(cuid())
-  salonName       String     @map("salon_name")
+  displayName     String     @map("salon_name")
   activityType    String?    @map("activity_type")
+  leadType        String     @default("business") @map("lead_type")
   address         String?
   phone           String?
   phones          Json?
@@ -331,11 +332,38 @@ model Lead {
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @updatedAt @map("updated_at")
 
+  // Forum / annonce fields
+  forumUsername    String?    @map("forum_username")
+  topicTitle      String?    @map("topic_title")
+  topicUrl        String?    @map("topic_url")
+  topicCategory   String?    @map("topic_category")
+  topicDate       DateTime?  @map("topic_date")
+  replyCount      Int?       @map("reply_count")
+  viewCount       Int?       @map("view_count")
+  aiSummary       String?    @map("ai_summary")
+
   contact    Contact?    @relation(fields: [contactId], references: [id])
   outreaches Outreach[]
 
-  @@unique([salonName, address], name: "lead_identity")
+  @@unique([displayName, address], name: "lead_identity")
   @@map("leads")
+}
+
+model ScrapeJob {
+  id          String    @id @default(cuid())
+  source      String
+  config      Json
+  status      String    @default("pending")
+  progress    Int       @default(0)
+  total       Int       @default(0)
+  phase       String?
+  resultCount Int?      @map("result_count")
+  errorLog    String?   @map("error_log")
+  startedAt   DateTime? @map("started_at")
+  finishedAt  DateTime? @map("finished_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("scrape_jobs")
 }
 
 model OutreachTemplate {

@@ -10,7 +10,37 @@ import fs from "fs";
 
 export async function updateLeadStatus(id: string, status: LeadStatus) {
   const db = getDb();
-  await db.lead.update({ where: { id }, data: { status } });
+
+  if (status === "converted") {
+    const lead = await db.lead.findUniqueOrThrow({ where: { id } });
+    if (lead.contactId) {
+      // Upgrade existing contact to client
+      await db.contact.update({ where: { id: lead.contactId }, data: { type: "client" } });
+      await db.lead.update({ where: { id }, data: { status, convertedAt: new Date() } });
+    } else {
+      // Create new client contact
+      const nameParts = (lead.ownerName ?? lead.displayName).split(" ");
+      const firstName = nameParts[0] ?? lead.displayName;
+      const lastName = nameParts.slice(1).join(" ") || "-";
+      const contact = await db.contact.create({
+        data: {
+          firstName,
+          lastName,
+          companyName: lead.displayName,
+          email: lead.email ?? undefined,
+          phone: lead.phone ?? undefined,
+          address: lead.address ?? undefined,
+          country: "Luxembourg",
+          source: lead.source,
+          type: "client",
+        },
+      });
+      await db.lead.update({ where: { id }, data: { status, contactId: contact.id, convertedAt: new Date() } });
+    }
+  } else {
+    await db.lead.update({ where: { id }, data: { status } });
+  }
+
   revalidatePath("/leads");
   revalidatePath(`/leads/${id}`);
 }
@@ -70,7 +100,7 @@ export async function createOutreach(formData: FormData): Promise<{ error?: stri
     try {
       await sendOutreachEmail({
         to: outreach.lead.email,
-        subject: subject ?? `Contact — ${outreach.lead.salonName}`,
+        subject: subject ?? `Contact — ${outreach.lead.displayName}`,
         body,
         fromName: "Caroline Finance",
         cardImageUrl: cardUrl,
@@ -79,7 +109,8 @@ export async function createOutreach(formData: FormData): Promise<{ error?: stri
       console.error("Email send failed (outreach saved):", err);
       await db.outreach.update({ where: { id: outreach.id }, data: { status: "draft", sentAt: null } });
       revalidatePath(`/leads/${leadId}`);
-      return { error: "L'email n'a pas pu être envoyé (erreur SMTP). Le message a été sauvegardé en brouillon." };
+      const detail = err instanceof Error ? err.message : "Erreur inconnue";
+      return { error: `Erreur SMTP : ${detail} — Message sauvegardé en brouillon. Vérifiez Paramètres → Email.` };
     }
   }
 
@@ -135,21 +166,21 @@ export async function convertLeadToContact(id: string) {
   const lead = await db.lead.findUniqueOrThrow({ where: { id } });
 
   // Split ownerName into first/last best-effort
-  const nameParts = (lead.ownerName ?? lead.salonName).split(" ");
-  const firstName = nameParts[0] ?? lead.salonName;
+  const nameParts = (lead.ownerName ?? lead.displayName).split(" ");
+  const firstName = nameParts[0] ?? lead.displayName;
   const lastName = nameParts.slice(1).join(" ") || "-";
 
   const contact = await db.contact.create({
     data: {
       firstName,
       lastName,
-      companyName: lead.salonName,
+      companyName: lead.displayName,
       email: lead.email ?? undefined,
       phone: lead.phone ?? undefined,
       address: lead.address ?? undefined,
       country: "Luxembourg",
       source: lead.source,
-      type: "prospect",
+      type: "client",
     },
   });
 
@@ -167,18 +198,66 @@ export async function convertLeadToContact(id: string) {
   redirect(`/contacts/${contact.id}`);
 }
 
-export async function deleteLead(id: string) {
+export async function deleteLead(id: string): Promise<{ error?: string }> {
   const db = getDb();
   await db.lead.delete({ where: { id } });
   revalidatePath("/leads");
-  redirect("/leads");
+  return {};
+}
+
+export async function updateLead(id: string, formData: FormData) {
+  const db = getDb();
+
+  const displayName = (formData.get("displayName") as string)?.trim();
+  if (!displayName) throw new Error("Le nom du commerce est requis.");
+
+  const activityType = (formData.get("activityType") as string)?.trim() || null;
+  const phone = (formData.get("phone") as string)?.trim() || null;
+  const email = (formData.get("email") as string)?.trim() || null;
+  const address = (formData.get("address") as string)?.trim() || null;
+  const ownerName = (formData.get("ownerName") as string)?.trim() || null;
+  const ownerTitle = (formData.get("ownerTitle") as string)?.trim() || null;
+  const notes = (formData.get("notes") as string)?.trim() || null;
+
+  await db.lead.update({
+    where: { id },
+    data: {
+      displayName,
+      activityType,
+      address,
+      phone,
+      email,
+      ownerName,
+      ownerTitle,
+      notes,
+    },
+  });
+
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${id}`);
+  redirect(`/leads/${id}`);
+}
+
+export async function updateOutreachStatus(outreachId: string, status: string) {
+  const db = getDb();
+  const data: Record<string, unknown> = { status };
+  if (status === "replied") data.repliedAt = new Date();
+
+  const outreach = await db.outreach.update({
+    where: { id: outreachId },
+    data,
+    include: { lead: true },
+  });
+
+  revalidatePath(`/leads/${outreach.leadId}`);
+  revalidatePath("/leads");
 }
 
 export async function createLead(formData: FormData) {
   const db = getDb();
 
-  const salonName = (formData.get("salonName") as string)?.trim();
-  if (!salonName) throw new Error("Le nom du commerce est requis.");
+  const displayName = (formData.get("displayName") as string)?.trim();
+  if (!displayName) throw new Error("Le nom du commerce est requis.");
 
   const activityType = (formData.get("activityType") as string)?.trim() || null;
   const phone = (formData.get("phone") as string)?.trim() || null;
@@ -190,7 +269,7 @@ export async function createLead(formData: FormData) {
 
   const lead = await db.lead.create({
     data: {
-      salonName,
+      displayName,
       activityType,
       address,
       phone,

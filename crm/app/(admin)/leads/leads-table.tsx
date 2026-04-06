@@ -18,7 +18,8 @@ const CONFIDENCE_COLORS: Record<string, string> = {
 
 type LeadRow = {
   id: string;
-  salonName: string;
+  displayName: string;
+  leadType: string;
   ownerName: string | null;
   ownerTitle: string | null;
   ownerConfidence: string | null;
@@ -26,6 +27,11 @@ type LeadRow = {
   address: string | null;
   phone: string | null;
   email: string | null;
+  source: string;
+  forumUsername: string | null;
+  topicCategory: string | null;
+  viewCount: number | null;
+  replyCount: number | null;
   status: LeadStatus;
   _count: { outreaches: number };
   outreaches: Array<{
@@ -33,6 +39,13 @@ type LeadRow = {
     channel: string;
     status: string;
   }>;
+};
+
+const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
+  salonkee: { label: "Salonkee", className: "bg-violet-100 text-violet-800" },
+  "frontaliers-forum": { label: "Forum", className: "bg-blue-100 text-blue-800" },
+  "frontaliers-annonces": { label: "Annonce", className: "bg-amber-100 text-amber-800" },
+  manual: { label: "Manuel", className: "bg-zinc-100 text-zinc-600" },
 };
 
 type Props = {
@@ -45,15 +58,29 @@ const STATUS_GROUPED = ["contacted", "replied", "qualified"];
 const columns: Column<LeadRow>[] = [
   {
     key: "commerce",
-    label: "Commerce",
-    render: (lead) => (
+    label: "Nom",
+    render: (lead) => {
+      const badge = SOURCE_BADGES[lead.source] ?? SOURCE_BADGES.manual;
+      return (
       <div>
-        <Link
-          href={`/leads/${lead.id}`}
-          className="font-medium hover:text-primary transition-colors block"
-        >
-          {lead.salonName}
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <Link
+            href={`/leads/${lead.id}`}
+            className="font-medium hover:text-primary transition-colors"
+          >
+            {lead.displayName}
+          </Link>
+          <span className={`inline-flex text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badge.className}`}>
+            {badge.label}
+          </span>
+        </div>
+        {lead.leadType === "forum" && lead.forumUsername && (
+          <span className="text-xs text-muted-foreground">
+            par {lead.forumUsername}
+            {lead.replyCount != null && ` · ${lead.replyCount} rép.`}
+            {lead.viewCount != null && ` · ${lead.viewCount} vues`}
+          </span>
+        )}
         {lead.activityType && (
           <span className="text-xs text-muted-foreground font-medium">
             {lead.activityType}
@@ -65,7 +92,7 @@ const columns: Column<LeadRow>[] = [
           </span>
         )}
       </div>
-    ),
+    );},
   },
   {
     key: "gerant",
@@ -159,7 +186,7 @@ export function LeadsTable({ leads, statuses }: Props) {
   return (
     <FilterableList
       items={leads}
-      searchFields={["salonName", "ownerName", "address", "phone", "email"]}
+      searchFields={["displayName", "ownerName", "address", "phone", "email", "forumUsername", "topicCategory"]}
       columns={columns}
       getId={(l) => l.id}
       statusOptions={statuses}

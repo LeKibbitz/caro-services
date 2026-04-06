@@ -1,0 +1,44 @@
+{
+  "base_url": "https://www.lesfrontaliers.lu",
+  "forum_categories": [
+    { "slug": "fiscalite", "name": "Fiscalité", "priority": "high" },
+    { "slug": "emploi", "name": "Emploi", "priority": "medium" },
+    { "slug": "prestations-familiales", "name": "Prestations familiales", "priority": "low" },
+    { "slug": "vie-quotidienne", "name": "Vie quotidienne", "priority": "low" }
+  ],
+  "annonces_url": "/petites-annonces/",
+  "delays": {
+    "between_pages": 3,
+    "between_topics": 2,
+    "between_enrichments": 1.5
+  },
+  "max_pages_per_category": 50,
+  "selectors": {
+    "forum": {
+      "topic_list": ".topic-listing-element",
+      "topic_title": "a.topic-title",
+      "topic_author": ".post-info a",
+      "topic_replies": ".answer-wrapper .stat-count",
+      "topic_views": ".stats-wrapper:not(.answer-wrapper) .stat-count",
+      "topic_category": ".parent-link",
+      "topic_date": ".post-info",
+      "pagination": ".paginator-link",
+      "per_page": 24
+    },
+    "topic_page": {
+      "first_post": ".wpforo-post-content",
+      "author_name": ".author-name a",
+      "post_date": ".post-stat span"
+    },
+    "annonces": {
+      "listing": ".petite-annonce, .annonce-item, article",
+      "title": ".annonce-title, h3 a",
+      "category": ".annonce-category",
+      "price": ".annonce-price",
+      "date": ".annonce-date",
+      "location": ".annonce-location",
+      "author": ".annonce-author",
+      "views": ".annonce-views"
+    }
+  }
+}
