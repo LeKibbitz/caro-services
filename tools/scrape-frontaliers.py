@@ -68,7 +68,15 @@ def launch_browser(pw, headless=True, use_chrome=False, cdp_url=None):
         print(f"  Connexion au Chrome existant via CDP: {cdp_url}")
         browser = pw.chromium.connect_over_cdp(cdp_url)
         ctx = browser.contexts[0] if browser.contexts else browser.new_context()
-        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        # Try to find a tab already on lesfrontaliers.lu
+        page = None
+        for p in ctx.pages:
+            if "lesfrontaliers.lu" in p.url:
+                page = p
+                print(f"  Onglet trouvé: {p.url[:60]}")
+                break
+        if not page:
+            page = ctx.new_page()
         return ctx, page
 
     kwargs = dict(
@@ -258,18 +266,62 @@ def dismiss_overlays(page):
 
 
 def navigate_to_page(page, base_url, page_num):
-    """Navigate to forum page N. Uses URL reload (most reliable with CDP)."""
+    """Navigate to forum page N.
+
+    wpForo uses a hidden form POST with input[name='pageexeq'] to paginate.
+    We submit it via JS, which is more reliable than URL params.
+    """
     dismiss_overlays(page)
     try:
-        # wpForo pagination: reload with ?paged=N or /page/N
-        target_url = f"{base_url}?paged={page_num}" if "?" not in base_url else f"{base_url}&paged={page_num}"
-        page.goto(target_url, timeout=60000)
+        # Get current first topic to detect change
+        old_title = page.evaluate("""() => {
+            const el = document.querySelector('.topic-listing-element a.topic-title');
+            return el ? el.textContent.trim() : '';
+        }""")
+
+        # wpForo pagination: set hidden input + submit form
+        submitted = page.evaluate(f"""() => {{
+            const input = document.querySelector('input[name="pageexeq"]');
+            const form = document.querySelector('#forum-home');
+            if (input && form) {{
+                input.value = '{page_num}';
+                form.submit();
+                return true;
+            }}
+            // Fallback: click the paginator link via JS
+            const link = document.querySelector('.paginator-link.number[data-page="{page_num}"]');
+            if (link) {{ link.click(); return true; }}
+            return false;
+        }}""")
+
+        if not submitted:
+            print(f"  [warn] Cannot find pagination form for page {page_num}")
+            return False
+
+        # Wait for page reload / AJAX refresh
         page.wait_for_timeout(2000)
-        dismiss_overlays(page)
         try:
-            page.wait_for_selector(".topic-listing-element", timeout=10000)
-        except PWTimeout:
-            pass
+            page.wait_for_selector(".topic-listing-element", timeout=15000)
+        except Exception:
+            # Context may have been destroyed by form submit — wait for new page
+            page.wait_for_timeout(5000)
+            try:
+                page.wait_for_selector(".topic-listing-element", timeout=10000)
+            except Exception:
+                pass
+
+        dismiss_overlays(page)
+
+        # Verify content changed
+        new_title = page.evaluate("""() => {
+            const el = document.querySelector('.topic-listing-element a.topic-title');
+            return el ? el.textContent.trim() : '';
+        }""")
+        if new_title != old_title:
+            print(f"  ✓ Page {page_num} chargée")
+        else:
+            print(f"  [info] Page {page_num} — même contenu (peut-être dernière page)")
+
         return True
     except Exception as e:
         print(f"  [warn] Navigation page {page_num} failed: {e}")
@@ -278,7 +330,7 @@ def navigate_to_page(page, base_url, page_num):
 
 def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True, use_chrome=False, cdp_url=None):
     """Scrape forum topics for a given category."""
-    url = f"{BASE_URL}/forum/{category_slug}/"
+    url = f"{BASE_URL}/forum/?cat={category_slug}"
     print(f"\n{'='*60}")
     print(f"Forum: {category_slug} — max {max_pages} pages")
     print(f"URL: {url}")
@@ -291,23 +343,24 @@ def scrape_forum(category_slug, max_pages=10, with_content=False, headless=True,
         ctx, page = launch_browser(pw, headless=headless, use_chrome=use_chrome, cdp_url=cdp_url)
 
         try:
-            page.goto(url, timeout=120000)
+            # If already on the right page (CDP reuse), skip navigation
+            current = page.url
+            if url.rstrip("/") not in current:
+                page.goto(url, timeout=120000)
+            else:
+                print(f"  Déjà sur la bonne page, pas de rechargement")
+
             # Wait for forum content or Cloudflare challenge
             for attempt in range(3):
                 try:
                     page.wait_for_selector(".topic-listing-element", timeout=15000)
                     break
                 except PWTimeout:
-                    # Check if Cloudflare challenge is present
                     cf = page.query_selector("#challenge-running, #cf-challenge-running, .cf-browser-verification, iframe[src*='challenge']")
                     if cf or attempt == 0:
                         print("\n  ⏳ Cloudflare détecté — résous le captcha dans la fenêtre Chrome.")
-                        print("     Appuie sur ENTRÉE ici quand c'est fait...")
-                        if not headless:
-                            input()
-                            page.wait_for_timeout(3000)
-                        else:
-                            page.wait_for_timeout(30000)
+                        print("     Le script attend que les topics apparaissent...")
+                        page.wait_for_timeout(30000)
                     else:
                         print("  [warn] Topics non chargés, on continue...")
                         break
