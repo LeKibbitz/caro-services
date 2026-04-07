@@ -265,7 +265,6 @@ enum MessageDirection {
 model Message {
   id        String           @id @default(cuid())
   contactId String?          @map("contact_id")
-  leadId    String?          @map("lead_id")
   channel   MessageChannel
   direction MessageDirection
   fromAddr  String?          @map("from_addr")
@@ -277,7 +276,6 @@ model Message {
   createdAt DateTime         @default(now()) @map("created_at")
 
   contact Contact? @relation(fields: [contactId], references: [id])
-  lead    Lead?    @relation(fields: [leadId], references: [id])
 
   @@map("messages")
 }
@@ -344,37 +342,11 @@ model Lead {
   viewCount       Int?       @map("view_count")
   aiSummary       String?    @map("ai_summary")
 
-  importBatch String?    @map("import_batch")
-
   contact    Contact?    @relation(fields: [contactId], references: [id])
   outreaches Outreach[]
-  labels     LeadLabel[]
-  messages   Message[]
 
   @@unique([displayName, address], name: "lead_identity")
   @@map("leads")
-}
-
-model Label {
-  id        String      @id @default(cuid())
-  name      String      @unique
-  color     String      @default("#6b7280")
-  createdAt DateTime    @default(now()) @map("created_at")
-
-  leads LeadLabel[]
-
-  @@map("labels")
-}
-
-model LeadLabel {
-  leadId  String @map("lead_id")
-  labelId String @map("label_id")
-
-  lead  Lead  @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
-
-  @@id([leadId, labelId])
-  @@map("lead_labels")
 }
 
 model ScrapeJob {

@@ -18,7 +18,6 @@ export default async function LeadsPage() {
           take: 1,
           select: { createdAt: true, channel: true, status: true },
         },
-        labels: { include: { label: true } },
       },
     }),
     db.lead.groupBy({

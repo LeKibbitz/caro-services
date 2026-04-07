@@ -46,7 +46,6 @@ type LeadRow = {
     channel: string;
     status: string;
   }>;
-  labels?: Array<{ label: { id: string; name: string; color: string } }>;
 };
 
 const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
@@ -98,19 +97,6 @@ const columns: Column<LeadRow>[] = [
           <span className="text-xs text-muted-foreground block">
             {lead.address}
           </span>
-        )}
-        {lead.labels && lead.labels.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-0.5">
-            {lead.labels.map((ll) => (
-              <span
-                key={ll.label.id}
-                className="inline-flex text-[10px] px-1.5 py-0.5 rounded-full font-medium border"
-                style={{ borderColor: ll.label.color, color: ll.label.color }}
-              >
-                {ll.label.name}
-              </span>
-            ))}
-          </div>
         )}
       </div>
     );},
