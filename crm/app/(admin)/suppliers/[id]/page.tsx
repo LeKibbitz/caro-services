@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, Globe, MapPin, FileText, Pencil } from "lucide-react";
 import Link from "next/link";
 import { deleteSupplier } from "../actions";
-import { SupplierForm } from "@/components/supplier-form";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function SupplierPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,6 +28,11 @@ export default async function SupplierPage({ params }: { params: Promise<{ id: s
           <Link href={`/suppliers/${id}/edit`}>
             <Button variant="outline" size="sm"><Pencil className="h-3.5 w-3.5 mr-1.5" />Modifier</Button>
           </Link>
+          <DeleteButton
+            onDelete={deleteSupplier.bind(null, id)}
+            redirectTo="/suppliers"
+            confirmMessage={`Supprimer le fournisseur "${supplier.name}" ? Cette action est irréversible.`}
+          />
         </div>
       </div>
 
@@ -93,13 +98,6 @@ export default async function SupplierPage({ params }: { params: Promise<{ id: s
         </Card>
       )}
 
-      <div className="border-t pt-4">
-        <form action={deleteSupplier.bind(null, id)}>
-          <Button variant="destructive" size="sm" type="submit" onClick={(e) => { if (!confirm("Supprimer ce fournisseur ?")) e.preventDefault(); }}>
-            Supprimer
-          </Button>
-        </form>
-      </div>
     </div>
   );
 }

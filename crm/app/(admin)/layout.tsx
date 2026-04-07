@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin-sidebar";
+import { GuidedTour } from "@/components/guided-tour";
 
 export default async function AdminLayout({
   children,
@@ -38,6 +39,7 @@ export default async function AdminLayout({
           <div className="p-6 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
+      <GuidedTour />
     </div>
   );
 }

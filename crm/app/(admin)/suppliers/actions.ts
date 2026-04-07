@@ -42,9 +42,9 @@ export async function updateSupplier(id: string, formData: FormData) {
   redirect(`/suppliers/${id}`);
 }
 
-export async function deleteSupplier(id: string) {
+export async function deleteSupplier(id: string): Promise<{ error?: string }> {
   const db = getDb();
   await db.supplier.delete({ where: { id } });
   revalidatePath("/suppliers");
-  redirect("/suppliers");
+  return {};
 }

@@ -16,7 +16,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, FileText, Sparkles, Users, Euro } from "lucide-react";
-import { createQuote } from "@/app/(admin)/quotes/actions";
+import { createQuote, updateQuote } from "@/app/(admin)/quotes/actions";
+import type { ServiceItem } from "@/lib/services-types";
+import { groupByCategory } from "@/lib/services-types";
 
 interface LineItem {
   description: string;
@@ -25,67 +27,42 @@ interface LineItem {
   total: number;
 }
 
-const SERVICE_CATALOG = [
-  {
-    category: "Consultations",
-    icon: "📞",
-    services: [
-      { description: "Appel découverte (15-30 min)", unitPrice: 0, badge: "Gratuit", detail: "Premier contact, évaluation de la situation" },
-      { description: "Consultation conseil (1h)", unitPrice: 60, detail: "Conseil fiscal ou comptable personnalisé" },
-      { description: "Assistance horaire (classement, appels, formulaires)", unitPrice: 30, detail: "Tarif horaire standard" },
-    ],
-  },
-  {
-    category: "Particuliers & Frontaliers",
-    icon: "👤",
-    services: [
-      { description: "Déclaration d'impôts sur le revenu (IR)", unitPrice: 280, badge: "Populaire", detail: "Analyse, optimisation, déclaration complète" },
-      { description: "Déclaration IR — situation complexe", unitPrice: 400, detail: "Multi-revenus, immobilier, international" },
-      { description: "Pack frontalier — premier setup complet FR-LU", unitPrice: 350, detail: "Configuration initiale, CCSS, MyGuichet, coordination" },
-      { description: "Vérification déductions fiscales", unitPrice: 120, detail: "Audit des déductions possibles" },
-      { description: "Assistance administrative frontalier", unitPrice: 150, detail: "CCSS, MyGuichet, coordination FR-LU" },
-    ],
-  },
-  {
-    category: "TVA & Déclarations périodiques",
-    icon: "📊",
-    services: [
-      { description: "Déclaration TVA mensuelle", unitPrice: 150, badge: "Récurrent", detail: "Préparation + dépôt MyGuichet" },
-      { description: "Déclaration TVA trimestrielle", unitPrice: 200, detail: "Préparation + dépôt MyGuichet" },
-      { description: "Déclaration TVA annuelle", unitPrice: 350, detail: "Récapitulatif + dépôt" },
-    ],
-  },
-  {
-    category: "Entreprises & Sociétés",
-    icon: "🏢",
-    services: [
-      { description: "Pack Entreprise annuel", unitPrice: 1800, badge: "Meilleure offre", detail: "TVA + clôture + RCS + support illimité" },
-      { description: "Déclaration société (IS/ICC/IF)", unitPrice: 400, detail: "Impôts des sociétés sous seuils" },
-      { description: "Comptabilité annuelle", unitPrice: 1200, detail: "Tenue comptable + clôture" },
-      { description: "Clôture annuelle + dépôt RCS", unitPrice: 800, detail: "Bilan + compte de résultat + dépôt" },
-      { description: "Création SARL-S — accompagnement", unitPrice: 500, detail: "Statuts, immatriculation, setup" },
-    ],
-  },
-  {
-    category: "Social & Paie",
-    icon: "👷",
-    services: [
-      { description: "Déclarations CCSS mensuelle", unitPrice: 200, detail: "Centre Commun Sécurité Sociale" },
-      { description: "Bulletins de salaire (par salarié/mois)", unitPrice: 50, detail: "Établissement + envoi" },
-      { description: "Coordination FR-LU", unitPrice: 350, detail: "Problématiques transfrontalières" },
-    ],
-  },
-];
-
 interface QuoteFormProps {
-  contacts: { id: string; firstName: string; lastName: string; companyName: string | null }[];
+  contacts: { id: string; firstName: string; lastName: string; companyName: string | null; country: string | null }[];
+  catalog?: ServiceItem[];
+  // Edit mode props
+  quoteId?: string;
+  initialContactId?: string;
+  initialContactName?: string;
+  defaultContactId?: string;
+  defaultContactName?: string;
+  initialItems?: LineItem[];
+  initialTaxRate?: number;
+  initialNotes?: string;
+  initialValidUntil?: string;
 }
 
-export function QuoteForm({ contacts }: QuoteFormProps) {
-  const [items, setItems] = useState<LineItem[]>([]);
-  const [taxRate, setTaxRate] = useState(0);
-  const [contactId, setContactId] = useState("");
-  const [showCatalog, setShowCatalog] = useState(true);
+export function QuoteForm({
+  contacts,
+  catalog,
+  quoteId,
+  initialContactId,
+  initialContactName,
+  defaultContactId,
+  defaultContactName,
+  initialItems,
+  initialTaxRate,
+  initialNotes,
+  initialValidUntil,
+}: QuoteFormProps) {
+  const isEditMode = !!quoteId;
+  const [items, setItems] = useState<LineItem[]>(initialItems ?? []);
+  const [taxRate, setTaxRate] = useState(initialTaxRate ?? 17);
+  const [contactId, setContactId] = useState(initialContactId ?? defaultContactId ?? "");
+  const [showCatalog, setShowCatalog] = useState(!isEditMode);
+
+  // Use DB catalog if provided, otherwise it will be empty (handled below)
+  const groupedCatalog = groupByCategory(catalog ?? []);
 
   function addItem(description: string = "", unitPrice: number = 0, quantity: number = 1) {
     setItems((prev) => [
@@ -117,6 +94,15 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
     }
   }
 
+  function handleContactChange(v: string | null) {
+    if (!v) return;
+    setContactId(v);
+    if (!isEditMode) {
+      const contact = contacts.find((c) => c.id === v);
+      setTaxRate(contact?.country === "France" ? 20 : 17);
+    }
+  }
+
   const subtotal = items.reduce((sum, i) => sum + i.total, 0);
   const taxAmount = subtotal * (taxRate / 100);
   const total = subtotal + taxAmount;
@@ -126,7 +112,11 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
       action={async (formData: FormData) => {
         formData.set("items", JSON.stringify(items));
         formData.set("taxRate", String(taxRate));
-        await createQuote(formData);
+        if (isEditMode) {
+          await updateQuote(quoteId, formData);
+        } else {
+          await createQuote(formData);
+        }
       }}
     >
       <div className="space-y-6">
@@ -143,21 +133,27 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
               <div className="space-y-2">
                 <Label>Client *</Label>
                 <input type="hidden" name="contactId" value={contactId} />
-                <Select value={contactId} onValueChange={(v) => setContactId(v ?? "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {contacts.map((c) => {
-                      const label = `${c.firstName} ${c.lastName}${c.companyName ? ` · ${c.companyName}` : ""}`;
-                      return (
-                        <SelectItem key={c.id} value={c.id} label={label}>
-                          {label}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
+                {isEditMode || defaultContactId ? (
+                  <div className="h-10 px-3 py-2 border border-input rounded-md bg-muted/50 text-sm text-muted-foreground">
+                    {initialContactName ?? defaultContactName}
+                  </div>
+                ) : (
+                  <Select value={contactId} onValueChange={handleContactChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {contacts.map((c) => {
+                        const label = `${c.firstName} ${c.lastName}${c.companyName ? ` · ${c.companyName}` : ""}`;
+                        return (
+                          <SelectItem key={c.id} value={c.id} label={label}>
+                            {label}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="validUntil">Valable jusqu&apos;au</Label>
@@ -166,6 +162,7 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
                   name="validUntil"
                   type="date"
                   defaultValue={
+                    initialValidUntil ??
                     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                       .toISOString()
                       .split("T")[0]
@@ -194,24 +191,25 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
           </CardHeader>
           {showCatalog && (
             <CardContent className="space-y-5">
-              {SERVICE_CATALOG.map((cat) => (
+              {groupedCatalog.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Aucun service dans le catalogue.{" "}
+                  <a href="/settings/services" className="text-primary hover:underline">Gérer le catalogue</a>
+                </p>
+              )}
+              {groupedCatalog.map((cat) => (
                 <div key={cat.category}>
-                  <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <span>{cat.icon}</span>
-                    {cat.category}
-                  </h4>
+                  <h4 className="text-sm font-semibold mb-2">{cat.category}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {cat.services.map((svc) => {
+                    {cat.items.map((svc) => {
                       const isAdded = items.some(
                         (i) => i.description === svc.description
                       );
                       return (
                         <button
-                          key={svc.description}
+                          key={svc.id}
                           type="button"
-                          onClick={() =>
-                            addFromCatalog(svc.description, svc.unitPrice)
-                          }
+                          onClick={() => addFromCatalog(svc.description, svc.unitPrice)}
                           className={`text-left p-3 rounded-lg border transition-all group ${
                             isAdded
                               ? "border-primary/50 bg-primary/5"
@@ -223,26 +221,19 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
                               <div className="text-sm font-medium flex items-center gap-2 flex-wrap">
                                 {svc.description}
                                 {svc.badge && (
-                                  <Badge
-                                    variant="secondary"
-                                    className="text-[10px] px-1.5 py-0"
-                                  >
+                                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                                     {svc.badge}
                                   </Badge>
                                 )}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-0.5">
-                                {svc.detail}
-                              </div>
+                              {svc.detail && (
+                                <div className="text-xs text-muted-foreground mt-0.5">{svc.detail}</div>
+                              )}
                             </div>
                             <div className="shrink-0 text-right">
-                              <div className="font-mono font-bold text-sm">
-                                {svc.unitPrice}€
-                              </div>
+                              <div className="font-mono font-bold text-sm">{svc.unitPrice}€</div>
                               {isAdded && (
-                                <div className="text-[10px] text-primary font-medium">
-                                  Ajouté
-                                </div>
+                                <div className="text-[10px] text-primary font-medium">Ajouté</div>
                               )}
                             </div>
                           </div>
@@ -365,15 +356,20 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
                   <div className="flex justify-between text-sm items-center">
                     <span className="text-muted-foreground">TVA</span>
                     <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={taxRate}
-                        onChange={(e) => setTaxRate(Number(e.target.value))}
-                        className="w-16 h-7 text-right text-xs font-mono"
-                      />
-                      <span className="text-xs text-muted-foreground">%</span>
+                      {[0, 17, 20].map((rate) => (
+                        <button
+                          key={rate}
+                          type="button"
+                          onClick={() => setTaxRate(rate)}
+                          className={`h-7 px-2.5 rounded text-xs font-mono border transition-colors ${
+                            taxRate === rate
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "border-border hover:bg-muted"
+                          }`}
+                        >
+                          {rate}%
+                        </button>
+                      ))}
                       <span className="font-mono text-sm w-20 text-right">
                         {taxAmount.toFixed(2)}€
                       </span>
@@ -405,7 +401,7 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
                 name="notes"
                 rows={3}
                 placeholder="Conditions particulières, délais, informations complémentaires..."
-                defaultValue="Ce devis est valable 30 jours à compter de sa date d'émission. Les prestations sont réalisées à titre d'assistance et de support — elles excluent les activités réglementées d'expertise-comptable et de conseil fiscal."
+                defaultValue={initialNotes ?? "Ce devis est valable 30 jours à compter de sa date d'émission. Les prestations sont réalisées à titre d'assistance et de support — elles excluent les activités réglementées d'expertise-comptable et de conseil fiscal."}
               />
             </div>
           </CardContent>
@@ -437,7 +433,7 @@ export function QuoteForm({ contacts }: QuoteFormProps) {
               className="min-w-[160px]"
             >
               <FileText className="h-4 w-4 mr-2" />
-              Créer le devis
+              {isEditMode ? "Enregistrer les modifications" : "Créer le devis"}
             </Button>
           </div>
         </div>

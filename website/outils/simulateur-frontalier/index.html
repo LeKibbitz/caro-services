@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulateur Fiscal Frontalier France-Luxembourg 2026 | Caro Fiscalité</title>
+  <meta name="description" content="Estimez vos impôts luxembourgeois en tant que frontalier France-Luxembourg : classe d'impôt, cotisations sociales, déductions, taux effectif. Simulateur gratuit 2026.">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="simulateur fiscal Luxembourg, calculatrice impôts frontalier, simulateur frontalier France Luxembourg 2026, fiduciaire simulateur fiscal, calculer impôt Luxembourg frontalier">
+  <link rel="canonical" href="https://caroline-finance.com/outils/simulateur-frontalier/">
+  <meta property="og:title" content="Simulateur Fiscal Frontalier France-Luxembourg 2026">
+  <meta property="og:description" content="Estimez vos impôts luxembourgeois de frontalier : cotisations, déductions, classe d'impôt, taux effectif. Gratuit et instantané.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://caroline-finance.com/outils/simulateur-frontalier/">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Caro Fiscalité & Comptabilité">
+  <meta property="og:image" content="https://caroline-finance.com/caro-profile.jpg">
+  <meta property="og:image:alt" content="Caroline Charpentier — Caro Fiscalité">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css?v=1774950062">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%23FA5D29'/><text x='50' y='72' font-size='60' font-family='system-ui' font-weight='600' fill='white' text-anchor='middle'>C</text></svg>">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Simulateur Fiscal Frontalier France-Luxembourg 2026",
+    "description": "Outil en ligne gratuit pour estimer l'impôt luxembourgeois d'un travailleur frontalier France-Luxembourg. Calcul des cotisations sociales, déductions, classe d'impôt et taux effectif.",
+    "url": "https://caroline-finance.com/outils/simulateur-frontalier/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "provider": { "@type": "ProfessionalService", "name": "Caro Fiscalité & Comptabilité", "url": "https://caroline-finance.com" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://caroline-finance.com/"},
+      {"@type": "ListItem", "position": 2, "name": "Outils", "item": "https://caroline-finance.com/outils/"},
+      {"@type": "ListItem", "position": 3, "name": "Simulateur frontalier", "item": "https://caroline-finance.com/outils/simulateur-frontalier/"}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Comment est calculé l'impôt d'un frontalier au Luxembourg ?",
+        "acceptedAnswer": {"@type": "Answer", "text": "L'impôt luxembourgeois est calculé sur le revenu imposable (salaire brut moins cotisations sociales et déductions). Le barème (https://impotsdirects.public.lu/fr/az/b/bareme.html) est progressif, de 0 % à 42 %. Les salariés bénéficient d'un crédit d'impôt (CIS) de 696 € par an. La classe d'impôt (1, 1a ou 2) influence le taux applicable."}
+      },
+      {
+        "@type": "Question",
+        "name": "Quelle est la différence entre classe 1 et classe 2 au Luxembourg ?",
+        "acceptedAnswer": {"@type": "Answer", "text": "La classe 1 (https://impotsdirects.public.lu/fr/az/c/classe_impot.html) s'applique aux célibataires sans enfant. La classe 1a aux célibataires avec enfant à charge ou de plus de 65 ans. La classe 2 s'applique aux couples mariés lorsque plus de 90 % des revenus du ménage proviennent du Luxembourg. En classe 2, le barème est appliqué à la moitié du revenu, puis l'impôt est doublé, ce qui est plus avantageux pour les revenus élevés."}
+      },
+      {
+        "@type": "Question",
+        "name": "Quelles sont les cotisations sociales d'un frontalier au Luxembourg ?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Les cotisations salariales au Luxembourg représentent environ 12,45 % du salaire brut : assurance maladie (3,05 %), assurance pension/retraite (8 %) et assurance dépendance (1,4 %). Ces cotisations sont gérées par le CCSS (https://www.ccss.lu) et sont déductibles du revenu imposable."}
+      },
+      {
+        "@type": "Question",
+        "name": "Ce simulateur remplace-t-il un avis fiscal professionnel ?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Non. Ce simulateur fournit une estimation indicative basée sur un barème simplifié. Il ne tient pas compte de toutes les spécificités individuelles (revenus complémentaires, situations familiales complexes, conventions bilatérales). Pour une analyse précise, consultez un expert-comptable spécialisé."}
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    .sim-form {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; margin-bottom: 32px;
+    }
+    .sim-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .sim-form-grid .fg { margin-bottom: 0; }
+    .sim-form-grid .fg.full { grid-column: 1 / -1; }
+    .sim-form-actions {
+      margin-top: 28px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .sim-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 52px; padding: 0 32px; border-radius: var(--radius-pill);
+      background: var(--c-orange); color: #fff; border: none;
+      font-family: var(--font-1); font-size: var(--ts-base); font-weight: var(--fw-semi);
+      cursor: pointer; transition: transform 0.2s, opacity 0.2s;
+    }
+    .sim-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .sim-btn:active { transform: translateY(0); }
+    .sim-btn:focus-visible { outline: 2px solid var(--c-orange); outline-offset: 2px; }
+    .sim-reset {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: var(--radius-pill);
+      background: transparent; border: 1px solid var(--border); color: var(--c-muted);
+      font-family: var(--font-1); font-size: var(--ts-sm); font-weight: var(--fw-medium);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .sim-reset:hover { border-color: var(--c-primary); color: var(--c-primary); }
+    .sim-reset:focus-visible { outline: 2px solid var(--c-orange); outline-offset: 2px; }
+
+    .sim-results {
+      background: var(--c-orange-soft); border-left: 4px solid var(--c-orange);
+      border-radius: var(--radius); padding: 32px; margin-bottom: 32px;
+      display: none;
+    }
+    .sim-results.visible { display: block; }
+    .sim-results-title {
+      font-size: var(--ts-lg); font-weight: var(--fw-bold); margin-bottom: 24px;
+      color: var(--c-primary); letter-spacing: -0.02em;
+    }
+    .sim-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .sim-row:last-child { border-bottom: none; }
+    .sim-row-label { font-size: var(--ts-base); color: var(--c-secondary); }
+    .sim-row-value { font-size: var(--ts-base); font-weight: var(--fw-semi); color: var(--c-primary); text-align: right; }
+    .sim-row-big .sim-row-value {
+      font-size: var(--ts-xl); font-weight: var(--fw-bold); color: var(--c-orange);
+    }
+    .sim-row-big .sim-row-label {
+      font-size: var(--ts-md); font-weight: var(--fw-semi); color: var(--c-primary);
+    }
+    .sim-section-title {
+      font-size: var(--ts-sm); font-weight: var(--fw-bold); text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--c-muted); margin-top: 20px; margin-bottom: 8px;
+      padding-top: 12px; border-top: 2px solid rgba(0,0,0,0.08);
+    }
+    .sim-section-title:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+    [data-mode="dark"] .sim-results { background: var(--bg-2); border-left-color: var(--c-orange); }
+    [data-mode="dark"] .sim-row { border-bottom-color: rgba(255,255,255,0.06); }
+    [data-mode="dark"] .sim-section-title { border-top-color: rgba(255,255,255,0.08); }
+
+    .tool-cta {
+      background: var(--bg-dark); border-radius: var(--radius); padding: 40px; text-align: center; margin-top: 40px;
+    }
+    .tool-cta h3 { color: var(--bg-1); font-size: var(--ts-lg); font-weight: var(--fw-medium); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .tool-cta p { color: var(--c-muted); font-size: var(--ts-base); margin-bottom: 24px; line-height: 180%; }
+    .tool-cta .btn-o { font-size: var(--ts-base); height: 52px; padding: 0 32px; }
+    .tool-cta-sub { font-size: var(--ts-sm); color: var(--c-light); margin-top: 12px; }
+    [data-mode="dark"] .tool-cta { background: var(--bg-2); }
+    [data-mode="dark"] .tool-cta h3 { color: var(--c-primary); }
+
+    .sim-optional-label {
+      font-size: var(--ts-xs); color: var(--c-muted); font-weight: var(--fw-medium);
+      margin-left: 6px;
+    }
+    .sim-hint {
+      font-size: var(--ts-xs); color: var(--c-muted); margin-top: 4px; line-height: 150%;
+    }
+
+    @media (max-width: 640px) {
+      .sim-form-grid { grid-template-columns: 1fr; }
+      .sim-form { padding: 20px; }
+      .sim-results { padding: 20px; }
+      .sim-row-big .sim-row-value { font-size: var(--ts-lg); }
+    }
+  </style>
+</head>
+<body data-mode="light" data-lang="fr">
+
+  <header class="hd" id="hd">
+    <a href="/" class="hd-logo"><b>C</b>aroline Fiscalité & Comptabilité</a>
+    <nav class="hd-nav">
+      <a href="/" data-fr="Accueil" data-en="Home">Accueil</a>
+      <a href="/frontaliers-france-luxembourg/" data-fr="Frontaliers" data-en="Cross-border">Frontaliers</a>
+      <a href="/residents-luxembourg/" data-fr="Résidents" data-en="Residents">Résidents</a>
+      <a href="/comptabilite-independants-luxembourg/" data-fr="Indépendants" data-en="Self-employed">Indépendants</a>
+      <a href="/creation-entreprise-luxembourg/" data-fr="TPE/PME" data-en="SMBs">TPE/PME</a>
+      <a href="/blog/" data-fr="Blog" data-en="Blog">Blog</a>
+      <a href="/#contact" data-fr="Contact" data-en="Contact">Contact</a>
+    </nav>
+    <div class="hd-r">
+      <div class="hd-soc">
+        <a href="https://www.linkedin.com/company/112325253/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
+        <a href="tel:+352661521101" aria-label="Appeler" class="wa-btn" style="background:#0078FF;"><i class="fas fa-phone"></i></a>
+        <a href="https://wa.me/352661521101" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://x.com/Caro_Finance" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
+        <a href="https://www.tiktok.com/@caroline_finance" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+      </div>
+      <div class="hd-lang">
+        <button class="on" onclick="setLang('fr')">FR</button>
+        <button onclick="setLang('en')">EN</button>
+      </div>
+      <button class="hd-mode" id="modeToggle" onclick="toggleMode()"><i class="fas fa-sun"></i></button>
+      <button class="hd-menu" onclick="openMenu()"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <div class="sticky-top">
+    <p data-fr="Estimez vos impôts de frontalier en quelques clics" data-en="Estimate your cross-border taxes in a few clicks">Estimez vos impôts de frontalier en quelques clics</p>
+    <a href="/#contact" class="sticky-btn" data-fr="Demander un devis →" data-en="Request a quote →">Demander un devis →</a>
+    <a href="tel:+352661521101" class="icon-btn phone" aria-label="Appeler"><i class="fas fa-phone"></i></a>
+    <a href="https://wa.me/352661521101" target="_blank" rel="noopener" class="icon-btn wa" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  </div>
+
+  <div class="m-ov" id="mOv" onclick="closeMenu()"></div>
+  <div class="m-pn" id="mPn">
+    <button class="m-x" onclick="closeMenu()"><i class="fas fa-times"></i></button>
+    <a href="/" onclick="closeMenu()" data-fr="Accueil" data-en="Home">Accueil</a>
+    <a href="/frontaliers-france-luxembourg/" onclick="closeMenu()" data-fr="Frontaliers" data-en="Cross-border">Frontaliers</a>
+    <a href="/residents-luxembourg/" onclick="closeMenu()" data-fr="Résidents" data-en="Residents">Résidents</a>
+    <a href="/comptabilite-independants-luxembourg/" onclick="closeMenu()" data-fr="Indépendants" data-en="Self-employed">Indépendants</a>
+    <a href="/creation-entreprise-luxembourg/" onclick="closeMenu()" data-fr="TPE/PME" data-en="SMBs">TPE/PME</a>
+    <a href="/blog/" onclick="closeMenu()" data-fr="Blog" data-en="Blog">Blog</a>
+    <a href="/#contact" onclick="closeMenu()" data-fr="Contact" data-en="Contact">Contact</a>
+  </div>
+
+  <div class="w">
+    <div class="breadcrumbs rv">
+      <a href="/" data-fr="Accueil" data-en="Home">Accueil</a><span class="sep">&rsaquo;</span><span data-fr="Outils" data-en="Tools">Outils</span><span class="sep">&rsaquo;</span><span data-fr="Simulateur frontalier" data-en="Cross-border simulator">Simulateur frontalier</span>
+    </div>
+  </div>
+
+  <section class="page-hero">
+    <div class="w">
+      <div class="sc-label rv" data-fr="Outil interactif" data-en="Interactive tool">Outil interactif</div>
+      <h1 class="rv rv-1" data-fr="Simulateur Fiscal Frontalier France-Luxembourg 2026" data-en="France-Luxembourg Cross-border Tax Simulator 2026">Simulateur Fiscal Frontalier France-Luxembourg 2026</h1>
+      <p class="page-intro rv rv-2" data-fr="Plus de 120 000 travailleurs frontaliers traversent chaque jour la frontière française pour travailler au Grand-Duché de Luxembourg. Si vous en faites partie, vous le savez : la fiscalité transfrontalière est un véritable casse-tête. Entre les &lt;a href=&quot;https://www.ccss.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;cotisations sociales luxembourgeoises&lt;/a&gt;, les &lt;a href=&quot;https://impotsdirects.public.lu/fr/az/c/classe_impot.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;classes d'impôt&lt;/a&gt;, les déductions pour frais de déplacement et les intérêts d'emprunt, il est difficile d'y voir clair sans l'aide d'un professionnel. Ce simulateur vous permet d'obtenir une première estimation de votre impôt luxembourgeois en quelques clics, sur la base du barème 2026 simplifié. Renseignez vos informations et découvrez votre classe d'impôt probable, vos cotisations sociales et votre taux d'imposition effectif." data-en="Over 120,000 cross-border workers commute daily from France to the Grand Duchy of Luxembourg. If you are one of them, you know it well: cross-border taxation is a real headache. Between Luxembourg &lt;a href=&quot;https://www.ccss.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;social contributions&lt;/a&gt;, &lt;a href=&quot;https://impotsdirects.public.lu/fr/az/c/classe_impot.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;tax classes&lt;/a&gt;, commuting deductions and mortgage interest, it is hard to see clearly without professional help. This simulator lets you get a first estimate of your Luxembourg tax in a few clicks, based on the simplified 2026 tax brackets. Enter your details and discover your likely tax class, social contributions and effective tax rate.">Plus de 120 000 travailleurs frontaliers traversent chaque jour la frontière française pour travailler au Grand-Duché de Luxembourg. Si vous en faites partie, vous le savez : la fiscalité transfrontalière est un véritable casse-tête. Entre les <a href="https://www.ccss.lu" target="_blank" rel="noopener">cotisations sociales luxembourgeoises</a>, les <a href="https://impotsdirects.public.lu/fr/az/c/classe_impot.html" target="_blank" rel="noopener">classes d'impôt</a>, les déductions pour frais de déplacement et les intérêts d'emprunt, il est difficile d'y voir clair sans l'aide d'un professionnel. Ce simulateur vous permet d'obtenir une première estimation de votre impôt luxembourgeois en quelques clics, sur la base du barème 2026 simplifié. Renseignez vos informations et découvrez votre classe d'impôt probable, vos cotisations sociales et votre taux d'imposition effectif.</p>
+    </div>
+  </section>
+
+  <section class="sc">
+    <div class="w">
+
+      <!-- Warning box -->
+      <div class="info-box rv">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <strong data-fr="Estimation indicative" data-en="Indicative estimate">Estimation indicative</strong>
+          <span data-fr=" — Ce simulateur fournit une estimation simplifiée de l'impôt luxembourgeois sur base du barème 2026. Il ne constitue pas un avis fiscal et ne remplace pas l'analyse personnalisée d'un expert-comptable. Consultez l'&lt;a href=&quot;https://impotsdirects.public.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ACD&lt;/a&gt; pour les textes officiels." data-en=" — This simulator provides a simplified estimate of Luxembourg tax based on the 2026 brackets. It does not constitute tax advice and does not replace a personalised analysis by a qualified accountant. See the &lt;a href=&quot;https://impotsdirects.public.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ACD&lt;/a&gt; for official texts."> — Ce simulateur fournit une estimation simplifiée de l'impôt luxembourgeois sur base du barème 2026. Il ne constitue pas un avis fiscal et ne remplace pas l'analyse personnalisée d'un expert-comptable. Consultez l'<a href="https://impotsdirects.public.lu" target="_blank" rel="noopener">ACD</a> pour les textes officiels.</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="sim-form rv">
+        <div class="sim-form-grid">
+
+          <div class="fg full">
+            <label for="grossSalary" data-fr="Salaire brut annuel au Luxembourg" data-en="Annual gross salary in Luxembourg">Salaire brut annuel au Luxembourg</label>
+            <input type="number" id="grossSalary" min="0" step="100" placeholder="55 000">
+          </div>
+
+          <div class="fg">
+            <label for="familyStatus" data-fr="Situation familiale" data-en="Family status">Situation familiale</label>
+            <select id="familyStatus">
+              <option value="single" data-fr="Célibataire" data-en="Single">Célibataire</option>
+              <option value="married_alone" data-fr="Marié — conjoint sans revenu" data-en="Married — spouse with no income">Marié — conjoint sans revenu</option>
+              <option value="married_both" data-fr="Marié — conjoint travaille en France" data-en="Married — spouse works in France">Marié — conjoint travaille en France</option>
+            </select>
+          </div>
+
+          <div class="fg">
+            <label for="children" data-fr="Nombre d'enfants" data-en="Number of children">Nombre d'enfants</label>
+            <select id="children">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+
+          <div class="fg">
+            <label for="distance" data-fr="Distance domicile-travail (km)" data-en="Home-work distance (km)">Distance domicile-travail (km)</label>
+            <input type="number" id="distance" min="0" step="1" placeholder="35">
+            <div class="sim-hint" id="fdHint" data-fr="Forfait déplacement calculé automatiquement" data-en="Commuting deduction calculated automatically">Forfait déplacement calculé automatiquement</div>
+          </div>
+
+          <div class="fg">
+            <label for="mortgage" data-fr="Intérêts emprunt immobilier" data-en="Mortgage interest">Intérêts emprunt immobilier<span class="sim-optional-label" data-fr="(optionnel)" data-en="(optional)">(optionnel)</span></label>
+            <input type="number" id="mortgage" min="0" step="50" placeholder="0">
+            <div class="sim-hint" data-fr="Résidence principale — plafond 672 € (célibataire) / 1 344 € (couple)" data-en="Main residence — cap 672 € (single) / 1,344 € (couple)">Résidence principale — plafond 672 € (célibataire) / 1 344 € (couple)</div>
+          </div>
+
+          <div class="fg">
+            <label for="prevoyance" data-fr="Cotisations prévoyance" data-en="Pension insurance contributions">Cotisations prévoyance<span class="sim-optional-label" data-fr="(optionnel)" data-en="(optional)">(optionnel)</span></label>
+            <input type="number" id="prevoyance" min="0" step="50" placeholder="0">
+            <div class="sim-hint" data-fr="Art. 111bis LIR — plafond 3 200 €" data-en="Art. 111bis LIR — cap 3,200 €">Art. 111bis LIR — plafond 3 200 €</div>
+          </div>
+
+        </div>
+
+        <div class="sim-form-actions">
+          <button class="sim-btn" id="simBtn" type="button">
+            <i class="fas fa-calculator"></i>
+            <span data-fr="Estimer mes impôts" data-en="Estimate my taxes">Estimer mes impôts</span>
+          </button>
+          <button class="sim-reset" id="simReset" type="button">
+            <i class="fas fa-redo"></i>
+            <span data-fr="Réinitialiser" data-en="Reset">Réinitialiser</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="sim-results" id="simResults"></div>
+
+      <!-- CTA -->
+      <div class="tool-cta rv" id="simCta" style="display:none">
+        <h3 data-fr="Cette estimation est indicative" data-en="This estimate is indicative">Cette estimation est indicative</h3>
+        <p data-fr="Pour une analyse précise de votre situation fiscale de frontalier, consultez Caroline Charpentier — experte en fiscalité transfrontalière depuis 30 ans." data-en="For a precise analysis of your cross-border tax situation, consult Caroline Charpentier — cross-border tax expert for over 30 years.">Pour une analyse précise de votre situation fiscale de frontalier, consultez Caroline Charpentier — experte en fiscalité transfrontalière depuis 30 ans.</p>
+        <a href="/frontaliers-france-luxembourg/" class="btn btn-o" data-fr="Demander un devis gratuit →" data-en="Request a free quote →">Demander un devis gratuit →</a>
+        <p class="tool-cta-sub" data-fr="Déclarations frontaliers à partir de 220 € · 30 ans d'expérience · Réponse sous 24h" data-en="Cross-border returns from 220 € · 30 years of experience · Response within 24h">Déclarations frontaliers à partir de 220 € · 30 ans d'expérience · Réponse sous 24h</p>
+      </div>
+
+      <!-- FAQ -->
+      <div class="page-content rv" style="margin-top:48px">
+        <h2 data-fr="Questions fréquentes" data-en="Frequently asked questions">Questions fréquentes</h2>
+      </div>
+      <div class="page-content rv">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q" data-fr="Comment est calculé l'impôt d'un frontalier au Luxembourg ?" data-en="How is a cross-border worker's tax calculated in Luxembourg?">Comment est calculé l'impôt d'un frontalier au Luxembourg ?</div>
+          <div class="faq-a" data-fr="L'impôt luxembourgeois est calculé sur le revenu imposable, c'est-à-dire le salaire brut diminué des cotisations sociales (environ 12,45 %) et des déductions (frais de déplacement, intérêts d'emprunt, prévoyance). Le &lt;a href=&quot;https://impotsdirects.public.lu/fr/az/b/bareme.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;barème&lt;/a&gt; est progressif, de 0 % à 42 %. Les salariés bénéficient d'un crédit d'impôt salarié (CIS) de 696 € par an. La classe d'impôt (1, 1a ou 2) influence le calcul final." data-en="Luxembourg tax is calculated on taxable income, i.e. gross salary minus social contributions (about 12.45%) and deductions (commuting, mortgage interest, pension insurance). The &lt;a href=&quot;https://impotsdirects.public.lu/fr/az/b/bareme.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;tax brackets&lt;/a&gt; are progressive, from 0% to 42%. Employees benefit from a tax credit (CIS) of 696 € per year. The tax class (1, 1a or 2) affects the final calculation.">L'impôt luxembourgeois est calculé sur le revenu imposable, c'est-à-dire le salaire brut diminué des cotisations sociales (environ 12,45 %) et des déductions (frais de déplacement, intérêts d'emprunt, prévoyance). Le <a href="https://impotsdirects.public.lu/fr/az/b/bareme.html" target="_blank" rel="noopener">barème</a> est progressif, de 0 % à 42 %. Les salariés bénéficient d'un crédit d'impôt salarié (CIS) de 696 € par an. La classe d'impôt (1, 1a ou 2) influence le calcul final.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q" data-fr="Quelle est la différence entre classe 1 et classe 2 au Luxembourg ?" data-en="What is the difference between class 1 and class 2 in Luxembourg?">Quelle est la différence entre classe 1 et classe 2 au Luxembourg ?</div>
+          <div class="faq-a" data-fr="La &lt;a href=&quot;https://impotsdirects.public.lu/fr/az/c/classe_impot.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;classe 1&lt;/a&gt; s'applique aux célibataires sans enfant. La classe 1a aux célibataires avec enfant à charge ou de plus de 65 ans. La classe 2 s'applique aux couples mariés lorsque plus de 90 % des revenus du ménage proviennent du Luxembourg — en classe 2, le barème est appliqué à la moitié du revenu puis l'impôt est doublé, ce qui réduit la charge fiscale pour les revenus plus élevés." data-en="&lt;a href=&quot;https://impotsdirects.public.lu/fr/az/c/classe_impot.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Class 1&lt;/a&gt; applies to single people without children. Class 1a to single people with dependent children or over 65. Class 2 applies to married couples when more than 90% of household income comes from Luxembourg — in class 2, the brackets are applied to half the income then the tax is doubled, reducing the tax burden for higher incomes.">La <a href="https://impotsdirects.public.lu/fr/az/c/classe_impot.html" target="_blank" rel="noopener">classe 1</a> s'applique aux célibataires sans enfant. La classe 1a aux célibataires avec enfant à charge ou de plus de 65 ans. La classe 2 s'applique aux couples mariés lorsque plus de 90 % des revenus du ménage proviennent du Luxembourg — en classe 2, le barème est appliqué à la moitié du revenu puis l'impôt est doublé, ce qui réduit la charge fiscale pour les revenus plus élevés.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q" data-fr="Quelles sont les cotisations sociales d'un frontalier au Luxembourg ?" data-en="What are the social contributions for a cross-border worker in Luxembourg?">Quelles sont les cotisations sociales d'un frontalier au Luxembourg ?</div>
+          <div class="faq-a" data-fr="Les cotisations salariales au Luxembourg représentent environ 12,45 % du salaire brut, réparties en trois volets : assurance maladie (3,05 %), assurance pension/retraite (8 %) et assurance dépendance (1,4 %). Ces cotisations sont gérées par le &lt;a href=&quot;https://www.ccss.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CCSS&lt;/a&gt;, sont déductibles du revenu imposable et apparaissent sur votre certificat de rémunération annuel." data-en="Employee social contributions in Luxembourg amount to approximately 12.45% of gross salary, split into three parts: health insurance (3.05%), pension insurance (8%) and dependency insurance (1.4%). These contributions are managed by the &lt;a href=&quot;https://www.ccss.lu&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CCSS&lt;/a&gt;, are deductible from taxable income and appear on your annual remuneration certificate.">Les cotisations salariales au Luxembourg représentent environ 12,45 % du salaire brut, réparties en trois volets : assurance maladie (3,05 %), assurance pension/retraite (8 %) et assurance dépendance (1,4 %). Ces cotisations sont gérées par le <a href="https://www.ccss.lu" target="_blank" rel="noopener">CCSS</a>, sont déductibles du revenu imposable et apparaissent sur votre certificat de rémunération annuel.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q" data-fr="Ce simulateur remplace-t-il un avis fiscal professionnel ?" data-en="Does this simulator replace professional tax advice?">Ce simulateur remplace-t-il un avis fiscal professionnel ?</div>
+          <div class="faq-a" data-fr="Non. Ce simulateur fournit une estimation indicative basée sur un barème simplifié. Il ne tient pas compte de toutes les spécificités individuelles (revenus complémentaires, situations familiales complexes, crédits d'impôt spécifiques). Pour une analyse précise et une optimisation de votre fiscalité de frontalier, consultez un expert-comptable spécialisé comme Caroline Charpentier." data-en="No. This simulator provides an indicative estimate based on a simplified scale. It does not take into account all individual specificities (additional income, complex family situations, specific tax credits). For a precise analysis and optimization of your cross-border taxation, consult a specialized accountant like Caroline Charpentier.">Non. Ce simulateur fournit une estimation indicative basée sur un barème simplifié. Il ne tient pas compte de toutes les spécificités individuelles (revenus complémentaires, situations familiales complexes, crédits d'impôt spécifiques). Pour une analyse précise et une optimisation de votre fiscalité de frontalier, consultez un expert-comptable spécialisé comme Caroline Charpentier.</div>
+        </div>
+      </div>
+
+      <div class="page-content rv" style="margin-top:32px; text-align:center;">
+        <p style="font-size:var(--ts-sm); color:var(--c-muted);" data-fr="Un outil proposé par Caroline Charpentier — &lt;a href=&quot;https://caroline-finance.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;caroline-finance.com&lt;/a&gt;" data-en="A tool by Caroline Charpentier — &lt;a href=&quot;https://caroline-finance.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;caroline-finance.com&lt;/a&gt;">Un outil proposé par Caroline Charpentier — <a href="https://caroline-finance.com" target="_blank" rel="noopener">caroline-finance.com</a></p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer><div class="w"><div class="ft"><div><div class="ft-links"><a href="/" data-fr="Accueil" data-en="Home">Accueil</a><a href="/frontaliers-france-luxembourg/" data-fr="Frontaliers" data-en="Cross-border">Frontaliers</a><a href="/creation-entreprise-luxembourg/" data-fr="TPE/PME" data-en="SMBs">TPE/PME</a><a href="/comptabilite-independants-luxembourg/" data-fr="Indépendants" data-en="Self-employed">Indépendants</a><a href="/blog/" data-fr="Blog" data-en="Blog">Blog</a><a href="/declaration-fiscale-luxembourg/" data-fr="Déclaration" data-en="Tax filing">Déclaration</a><a href="/tva-luxembourg/" data-fr="TVA" data-en="VAT">TVA</a><a href="/comptes-annuels-luxembourg/" data-fr="Comptes annuels" data-en="Annual accounts">Comptes annuels</a><a href="/outils/simulateur-frontalier/" data-fr="Simulateur" data-en="Simulator">Simulateur</a></div><p class="ft-c">&copy; 2026 Caro Fiscalité & Comptabilité · Luxembourg · caroline.charpentier.fessmann@gmail.com</p></div><div class="ft-s"><a href="https://www.linkedin.com/company/112325253/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a><a href="tel:+352661521101" aria-label="Appeler" class="wa-btn" style="background:#0078FF;"><i class="fas fa-phone"></i></a>
+  <a href="https://wa.me/352661521101" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://x.com/Caro_Finance" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
+        <a href="https://www.tiktok.com/@caroline_finance" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a><a href="mailto:caroline.charpentier.fessmann@gmail.com"><i class="fas fa-envelope"></i></a></div></div></div></footer>
+
+  <script>
+    /* =====================================================================
+       SIMULATEUR FISCAL FRONTALIER — LUXEMBOURG 2026
+       All DOM rendering uses document.createElement + textContent.
+       No innerHTML with user input. All data is computed, not user-sourced.
+       ===================================================================== */
+
+    /* --- Tax brackets (2026 simplified) --- */
+    var BRACKETS = [
+      [0, 11265, 0], [11265, 13173, 0.08], [13173, 15081, 0.10],
+      [15081, 16989, 0.12], [16989, 18897, 0.14], [18897, 20805, 0.16],
+      [20805, 22713, 0.18], [22713, 24621, 0.20], [24621, 26529, 0.22],
+      [26529, 28437, 0.24], [28437, 30345, 0.26], [30345, 32253, 0.28],
+      [32253, 34161, 0.30], [34161, 36069, 0.32], [36069, 37977, 0.34],
+      [37977, 39885, 0.36], [39885, 41793, 0.38], [41793, 100002, 0.39],
+      [100002, 150000, 0.40], [150000, 200004, 0.41], [200004, Infinity, 0.42]
+    ];
+
+    /* --- Social contribution rates --- */
+    var RATE_MALADIE = 0.0305;
+    var RATE_RETRAITE = 0.08;
+    var RATE_DEPENDANCE = 0.014;
+    var RATE_SOCIAL_TOTAL = RATE_MALADIE + RATE_RETRAITE + RATE_DEPENDANCE;
+
+    /* --- Constants --- */
+    var CIS_CREDIT = 696;
+    var FD_MIN = 540;
+    var FD_MAX = 2574;
+    var FD_RATE = 0.30;
+    var FD_DAYS = 220;
+    var MORTGAGE_CAP_SINGLE = 672;
+    var MORTGAGE_CAP_COUPLE = 1344;
+    var PREVOYANCE_CAP = 3200;
+
+    /* --- Helpers --- */
+    function parseNum(id) {
+      var v = parseFloat(document.getElementById(id).value);
+      return isNaN(v) || v < 0 ? 0 : v;
+    }
+
+    function fmtEur(n) {
+      return n.toLocaleString('fr-FR', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' \u20AC';
+    }
+
+    function fmtPct(n) {
+      return n.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' %';
+    }
+
+    function calcTaxBrackets(taxableIncome) {
+      var tax = 0;
+      for (var i = 0; i < BRACKETS.length; i++) {
+        var lo = BRACKETS[i][0], hi = BRACKETS[i][1], rate = BRACKETS[i][2];
+        if (taxableIncome <= lo) break;
+        var slice = Math.min(taxableIncome, hi) - lo;
+        tax += slice * rate;
+      }
+      return tax;
+    }
+
+    function calcFD(km) {
+      if (km <= 0) return FD_MIN;
+      var computed = km * FD_RATE * FD_DAYS;
+      return Math.min(Math.max(computed, FD_MIN), FD_MAX);
+    }
+
+    /* --- Build result rows using DOM API --- */
+    function addSection(container, labelFr, labelEn) {
+      var el = document.createElement('div');
+      el.className = 'sim-section-title';
+      el.setAttribute('data-fr', labelFr);
+      el.setAttribute('data-en', labelEn);
+      el.textContent = labelFr;
+      container.appendChild(el);
+    }
+
+    function addRow(container, labelFr, labelEn, value, isBig) {
+      var row = document.createElement('div');
+      row.className = 'sim-row' + (isBig ? ' sim-row-big' : '');
+
+      var lbl = document.createElement('div');
+      lbl.className = 'sim-row-label';
+      lbl.setAttribute('data-fr', labelFr);
+      lbl.setAttribute('data-en', labelEn);
+      lbl.textContent = labelFr;
+
+      var val = document.createElement('div');
+      val.className = 'sim-row-value';
+      val.textContent = value;
+
+      row.appendChild(lbl);
+      row.appendChild(val);
+      container.appendChild(row);
+    }
+
+    /* --- Main calculation --- */
+    function simulate() {
+      var gross = parseNum('grossSalary');
+      if (gross <= 0) {
+        var salaryInput = document.getElementById('grossSalary');
+        salaryInput.focus();
+        salaryInput.style.borderColor = 'var(--c-orange)';
+        setTimeout(function() { salaryInput.style.borderColor = ''; }, 2000);
+        return;
+      }
+
+      var family = document.getElementById('familyStatus').value;
+      var children = parseInt(document.getElementById('children').value, 10) || 0;
+      var distance = parseNum('distance');
+      var mortgage = parseNum('mortgage');
+      var prevoyance = parseNum('prevoyance');
+
+      /* Determine tax class */
+      var taxClass, taxClassLabel;
+      if (family === 'married_alone') {
+        taxClass = 2;
+        taxClassLabel = '2';
+      } else if (family === 'married_both') {
+        /* Married but spouse works in France: usually class 1, unless assimilation */
+        taxClass = 1;
+        taxClassLabel = '1';
+      } else {
+        /* Single */
+        if (children > 0) {
+          taxClass = 1; /* 1a */
+          taxClassLabel = '1a';
+        } else {
+          taxClass = 1;
+          taxClassLabel = '1';
+        }
+      }
+
+      /* Social contributions */
+      var cotMaladie = gross * RATE_MALADIE;
+      var cotRetraite = gross * RATE_RETRAITE;
+      var cotDependance = gross * RATE_DEPENDANCE;
+      var cotTotal = cotMaladie + cotRetraite + cotDependance;
+
+      /* Deductions */
+      var fd = calcFD(distance);
+      var mortgageCap = (family === 'married_alone') ? MORTGAGE_CAP_COUPLE : MORTGAGE_CAP_SINGLE;
+      var mortgageDeduction = Math.min(mortgage, mortgageCap);
+      var prevoyanceDeduction = Math.min(prevoyance, PREVOYANCE_CAP);
+
+      /* Taxable income */
+      var taxableIncome = gross - cotTotal - fd - mortgageDeduction - prevoyanceDeduction;
+      if (taxableIncome < 0) taxableIncome = 0;
+
+      /* Tax calculation */
+      var taxBrut;
+      if (taxClass === 2) {
+        /* Class 2: apply brackets to half, then double */
+        taxBrut = calcTaxBrackets(taxableIncome / 2) * 2;
+      } else {
+        taxBrut = calcTaxBrackets(taxableIncome);
+      }
+
+      /* CIS credit */
+      var cisCredit = CIS_CREDIT;
+      var taxNet = Math.max(taxBrut - cisCredit, 0);
+
+      /* Effective rate */
+      var effectiveRate = gross > 0 ? (taxNet / gross) * 100 : 0;
+
+      /* Update FD hint */
+      var fdHint = document.getElementById('fdHint');
+      var lang = document.body.dataset.lang || 'fr';
+      if (lang === 'en') {
+        fdHint.textContent = 'Commuting deduction: ' + fmtEur(fd) + '/year';
+      } else {
+        fdHint.textContent = 'Forfait d\u00E9placement : ' + fmtEur(fd) + '/an';
+      }
+
+      /* --- Build results DOM --- */
+      var container = document.getElementById('simResults');
+      container.textContent = '';
+
+      var title = document.createElement('div');
+      title.className = 'sim-results-title';
+      title.setAttribute('data-fr', 'R\u00E9sultats de la simulation');
+      title.setAttribute('data-en', 'Simulation results');
+      title.textContent = lang === 'en' ? 'Simulation results' : 'R\u00E9sultats de la simulation';
+      container.appendChild(title);
+
+      /* Tax class */
+      addSection(container, 'Classe d\u0027imp\u00F4t', 'Tax class');
+      addRow(container,
+        'Classe d\u0027imp\u00F4t probable',
+        'Probable tax class',
+        taxClassLabel, false);
+
+      /* Social contributions */
+      addSection(container, 'Cotisations sociales (12,45 %)', 'Social contributions (12.45%)');
+      addRow(container, 'Assurance maladie (3,05 %)', 'Health insurance (3.05%)', fmtEur(cotMaladie), false);
+      addRow(container, 'Assurance retraite (8 %)', 'Pension insurance (8%)', fmtEur(cotRetraite), false);
+      addRow(container, 'Assurance d\u00E9pendance (1,4 %)', 'Dependency insurance (1.4%)', fmtEur(cotDependance), false);
+      addRow(container, 'Total cotisations sociales', 'Total social contributions', fmtEur(cotTotal), false);
+
+      /* Deductions */
+      addSection(container, 'D\u00E9ductions', 'Deductions');
+      addRow(container, 'Frais de d\u00E9placement (FD)', 'Commuting deduction (FD)', fmtEur(fd), false);
+      if (mortgageDeduction > 0) {
+        addRow(container, 'Int\u00E9r\u00EAts emprunt immobilier', 'Mortgage interest', fmtEur(mortgageDeduction), false);
+      }
+      if (prevoyanceDeduction > 0) {
+        addRow(container, 'Pr\u00E9voyance (art. 111bis)', 'Pension insurance (art. 111bis)', fmtEur(prevoyanceDeduction), false);
+      }
+
+      /* Taxable income */
+      addSection(container, 'Imp\u00F4t', 'Tax');
+      addRow(container, 'Revenu imposable', 'Taxable income', fmtEur(taxableIncome), false);
+      addRow(container, 'Imp\u00F4t brut (bar\u00E8me)', 'Gross tax (brackets)', fmtEur(taxBrut), false);
+      addRow(container, 'Cr\u00E9dit d\u0027imp\u00F4t salari\u00E9 (CIS)', 'Employee tax credit (CIS)', '- ' + fmtEur(cisCredit), false);
+
+      /* Big results */
+      addSection(container, 'R\u00E9sultat', 'Result');
+      addRow(container, 'Total imp\u00F4t estim\u00E9', 'Estimated total tax', fmtEur(taxNet), true);
+      addRow(container, 'Taux effectif d\u0027imposition', 'Effective tax rate', fmtPct(effectiveRate), true);
+
+      container.classList.add('visible');
+
+      /* Show CTA */
+      document.getElementById('simCta').style.display = '';
+
+      /* Scroll to results */
+      container.scrollIntoView({behavior: 'smooth', block: 'start'});
+
+      /* Apply current language to new elements */
+      setLang(document.body.dataset.lang || 'fr');
+    }
+
+    function resetForm() {
+      document.getElementById('grossSalary').value = '';
+      document.getElementById('familyStatus').selectedIndex = 0;
+      document.getElementById('children').selectedIndex = 0;
+      document.getElementById('distance').value = '';
+      document.getElementById('mortgage').value = '';
+      document.getElementById('prevoyance').value = '';
+      document.getElementById('simResults').classList.remove('visible');
+      document.getElementById('simResults').textContent = '';
+      document.getElementById('simCta').style.display = 'none';
+      var fdHint = document.getElementById('fdHint');
+      var lang = document.body.dataset.lang || 'fr';
+      fdHint.textContent = lang === 'en' ? 'Commuting deduction calculated automatically' : 'Forfait d\u00E9placement calcul\u00E9 automatiquement';
+    }
+
+    /* --- Event listeners --- */
+    document.getElementById('simBtn').addEventListener('click', simulate);
+    document.getElementById('simReset').addEventListener('click', resetForm);
+
+    /* Allow Enter key to trigger simulation */
+    document.querySelectorAll('.sim-form input').forEach(function(input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); simulate(); }
+      });
+    });
+
+    /* === SHARED UI FUNCTIONS === */
+    function setLang(l){document.body.dataset.lang=l;localStorage.setItem('caroLang',l);document.querySelectorAll('.hd-lang button').forEach(function(b){b.classList.toggle('on',b.textContent.trim()===l.toUpperCase())});document.querySelectorAll('[data-fr][data-en]').forEach(function(e){if(e.tagName==='INPUT'||e.tagName==='TEXTAREA'){if(e.dataset[l+'Placeholder'])e.placeholder=e.dataset[l+'Placeholder']}else{e.innerHTML=e.dataset[l]}})}
+    function toggleMode(){var d=document.body.dataset.mode==='dark';document.body.dataset.mode=d?'light':'dark';document.getElementById('modeToggle').querySelector('i').className=d?'fas fa-sun':'fas fa-moon';localStorage.setItem('caroMode',document.body.dataset.mode)}
+    function openMenu(){document.getElementById('mPn').classList.add('on');document.getElementById('mOv').classList.add('on');document.body.style.overflow='hidden'}
+    function closeMenu(){document.getElementById('mPn').classList.remove('on');document.getElementById('mOv').classList.remove('on');document.body.style.overflow=''}
+    function toggleFaq(el){var item=el.closest?el.closest('.faq-item'):el;if(item)item.classList.toggle('open')}
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var mode = localStorage.getItem('caroMode') || 'light';
+      var lang = localStorage.getItem('caroLang') || 'fr';
+      document.body.dataset.mode = mode;
+      document.getElementById('modeToggle').querySelector('i').className = mode === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+      setLang(lang);
+
+      /* Reveal animations */
+      var rv = document.querySelectorAll('.rv');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) { if (entry.isIntersecting) { entry.target.classList.add('v'); obs.unobserve(entry.target); } });
+        }, {threshold: 0.08, rootMargin: '0px 0px -20px 0px'});
+        rv.forEach(function(el) { obs.observe(el); });
+      } else { rv.forEach(function(el) { el.classList.add('v'); }); }
+
+      /* Scroll header shadow */
+      var hd = document.getElementById('hd'); var scrolled = false;
+      window.addEventListener('scroll', function() { var s = window.scrollY > 10; if (s !== scrolled) { scrolled = s; hd.classList.toggle('s', scrolled); } }, {passive: true});
+    });
+  </script>
+
+  <div class="float-btns">
+    <a href="/#contact" class="cta-float" data-fr="Demander un devis →" data-en="Request a quote →">Demander un devis →</a>
+    <a href="tel:+352661521101" aria-label="Appeler" class="wa-btn" style="background:#0078FF;"><i class="fas fa-phone"></i></a>
+    <a href="https://wa.me/352661521101?text=Bonjour%20Caroline%2C%20je%20souhaite%20obtenir%20des%20informations%20sur%20vos%20services." target="_blank" rel="noopener" aria-label="WhatsApp" class="wa-float"><i class="fab fa-whatsapp"></i></a>
+  </div>
+
+</body>
+</html>

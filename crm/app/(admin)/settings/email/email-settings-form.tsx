@@ -83,22 +83,30 @@ function PasswordField({ name, placeholder }: { name: string; placeholder?: stri
   );
 }
 
+type PassSource = "db" | "env" | null;
+
+function PassIndicator({ source }: { source: PassSource }) {
+  if (source === "db") return <span className="ml-2 text-emerald-600 font-normal">● configuré</span>;
+  if (source === "env") return <span className="ml-2 text-amber-600 font-normal">● par défaut (.env)</span>;
+  return null;
+}
+
 export function EmailSettingsForm({
   smtpHost,
   smtpPort,
   smtpUser,
   imapHost,
   imapPort,
-  hasSmtpPass,
-  hasImapPass,
+  smtpPassSource,
+  imapPassSource,
 }: {
   smtpHost: string;
   smtpPort: number;
   smtpUser: string;
   imapHost: string;
   imapPort: number;
-  hasSmtpPass: boolean;
-  hasImapPass: boolean;
+  smtpPassSource: PassSource;
+  imapPassSource: PassSource;
 }) {
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
@@ -146,9 +154,7 @@ export function EmailSettingsForm({
           <div className="space-y-1.5">
             <Label className="text-xs">
               Mot de passe SMTP
-              {hasSmtpPass && (
-                <span className="ml-2 text-emerald-600 font-normal">● configuré</span>
-              )}
+              <PassIndicator source={smtpPassSource} />
             </Label>
             <PasswordField name="smtpPass" />
           </div>
@@ -177,9 +183,7 @@ export function EmailSettingsForm({
           <div className="space-y-1.5">
             <Label className="text-xs">
               Mot de passe IMAP
-              {hasImapPass && (
-                <span className="ml-2 text-emerald-600 font-normal">● configuré</span>
-              )}
+              <PassIndicator source={imapPassSource} />
             </Label>
             <PasswordField name="imapPass" placeholder="Identique au SMTP en général" />
           </div>

@@ -17,6 +17,13 @@ export async function getSetting(key: string, fallback?: string): Promise<string
   return cache[key] ?? process.env[key] ?? fallback;
 }
 
+export async function getSettingSource(key: string): Promise<"db" | "env" | null> {
+  await loadSettings();
+  if (cache[key] !== undefined) return "db";
+  if (process.env[key]) return "env";
+  return null;
+}
+
 export async function setSetting(key: string, value: string) {
   const db = getDb();
   await db.appSetting.upsert({

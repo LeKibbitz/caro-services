@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Receipt, Check, AlertTriangle } from "lucide-react";
+import { Receipt, Check, AlertTriangle, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateInvoiceStatus } from "../actions";
+import { updateInvoiceStatus, deleteInvoice } from "../actions";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function InvoiceDetailPage({
   params,
@@ -48,7 +49,7 @@ export default async function InvoiceDetailPage({
                 : isOverdue
                   ? "En retard"
                   : invoice.status === "sent"
-                    ? "Envoyée"
+                    ? "En cours"
                     : invoice.status}
             </Badge>
           </div>
@@ -72,16 +73,22 @@ export default async function InvoiceDetailPage({
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href={`/invoices/${id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+          </Link>
           {invoice.status === "draft" && (
             <form action={updateInvoiceStatus.bind(null, id, "sent")}>
-              <Button variant="outline" size="sm">
-                Marquer envoyée
+              <Button type="submit" variant="outline" size="sm">
+                Marquer en cours
               </Button>
             </form>
           )}
           {(invoice.status === "sent" || invoice.status === "overdue") && (
             <form action={updateInvoiceStatus.bind(null, id, "paid")}>
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+              <Button type="submit" size="sm" className="bg-emerald-600 hover:bg-emerald-700">
                 <Check className="h-4 w-4 mr-2" />
                 Marquer payée
               </Button>
@@ -89,12 +96,17 @@ export default async function InvoiceDetailPage({
           )}
           {invoice.status === "sent" && isOverdue && (
             <form action={updateInvoiceStatus.bind(null, id, "overdue")}>
-              <Button variant="destructive" size="sm">
+              <Button type="submit" variant="destructive" size="sm">
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 Marquer en retard
               </Button>
             </form>
           )}
+          <DeleteButton
+            onDelete={deleteInvoice.bind(null, id)}
+            redirectTo="/invoices"
+            confirmMessage={`Supprimer la facture ${invoice.number} ? Cette action est irréversible.`}
+          />
         </div>
       </div>
 
@@ -149,16 +161,14 @@ export default async function InvoiceDetailPage({
                 {Number(invoice.subtotal).toFixed(2)}€
               </span>
             </div>
-            {Number(invoice.taxRate) > 0 && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  TVA ({Number(invoice.taxRate)}%)
-                </span>
-                <span className="font-mono">
-                  {Number(invoice.taxAmount).toFixed(2)}€
-                </span>
-              </div>
-            )}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">
+                TVA ({Number(invoice.taxRate)}%)
+              </span>
+              <span className="font-mono">
+                {Number(invoice.taxAmount).toFixed(2)}€
+              </span>
+            </div>
             <div className="flex justify-between text-base font-bold pt-1 border-t">
               <span>Total</span>
               <span className="font-mono">

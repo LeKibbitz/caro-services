@@ -1,8 +1,11 @@
 import { getDb } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { SyncButton } from "./sync-button";
+import { InboxActions } from "./inbox-actions";
+import { ExportButton } from "@/components/export-button";
 
 export default async function InboxPage({
   searchParams,
@@ -44,7 +47,11 @@ export default async function InboxPage({
             Messages WhatsApp et emails unifiés.
           </p>
         </div>
-        <SyncButton />
+        <div className="flex items-center gap-2">
+          <ExportButton entity="messages" label="Exporter" />
+          <SyncButton />
+          <InboxActions />
+        </div>
       </div>
 
       <div className="flex gap-2">
@@ -72,17 +79,16 @@ export default async function InboxPage({
         <Card>
           <CardContent className="py-16 text-center">
             <p className="text-muted-foreground">
-              Aucun message. La synchronisation email et WhatsApp sera configurée
-              lors du déploiement.
+              Aucun message. Utilisez le bouton &quot;Composer&quot; pour envoyer le premier message.
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
           {messages.map((msg) => (
+            <Link key={msg.id} href={`/inbox/${msg.id}`}>
             <Card
-              key={msg.id}
-              className={`hover:bg-muted/30 transition-colors ${!msg.read ? "border-l-2 border-l-primary" : ""}`}
+              className={`hover:bg-muted/30 transition-colors cursor-pointer ${!msg.read ? "border-l-2 border-l-primary" : ""}`}
             >
               <CardContent className="py-3">
                 <div className="flex items-start justify-between gap-4">
@@ -101,7 +107,7 @@ export default async function InboxPage({
                         </span>
                       ) : (
                         <span className="text-sm text-muted-foreground">
-                          {msg.fromAddr ?? "Inconnu"}
+                          {msg.direction === "in" ? (msg.fromAddr ?? "Inconnu") : (msg.toAddr ?? "Inconnu")}
                         </span>
                       )}
                       <Badge variant={msg.direction === "in" ? "secondary" : "outline"} className="text-xs">
@@ -120,17 +126,20 @@ export default async function InboxPage({
                       {msg.body}
                     </p>
                   </div>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {new Date(msg.createdAt).toLocaleString("fr-FR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(msg.createdAt).toLocaleString("fr-FR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       )}

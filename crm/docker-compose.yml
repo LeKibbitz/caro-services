@@ -35,6 +35,8 @@ services:
       WA_BRIDGE_TOKEN: ${WA_BRIDGE_TOKEN}
       WA_BRIDGE_INTERNAL: ${WA_BRIDGE_INTERNAL}
       INBOX_WA_TOKEN: ${INBOX_WA_TOKEN}
+      LEADS_IMPORT_TOKEN: ${LEADS_IMPORT_TOKEN}
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}
     depends_on:
       caro-db:
         condition: service_healthy

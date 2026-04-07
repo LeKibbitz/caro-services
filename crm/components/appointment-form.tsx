@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createAppointment } from "@/app/(admin)/calendar/actions";
+// native <select> used for contactId/supplierId to avoid @base-ui showing UUID in trigger
 
 type AttendeeType = "client" | "supplier" | "personal";
 
@@ -61,31 +62,33 @@ export function AppointmentForm({ contacts, suppliers }: AppointmentFormProps) {
               {attendeeType === "client" && (
                 <>
                   <Label>Client</Label>
-                  <Select name="contactId">
-                    <SelectTrigger><SelectValue placeholder="Optionnel" /></SelectTrigger>
-                    <SelectContent>
-                      {contacts.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.firstName} {c.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="contactId"
+                    className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+                  >
+                    <option value="">— Optionnel —</option>
+                    {contacts.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.firstName} {c.lastName}
+                      </option>
+                    ))}
+                  </select>
                 </>
               )}
               {attendeeType === "supplier" && (
                 <>
                   <Label>Fournisseur</Label>
-                  <Select name="supplierId">
-                    <SelectTrigger><SelectValue placeholder="Choisir un fournisseur" /></SelectTrigger>
-                    <SelectContent>
-                      {suppliers.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.name}{s.contactName ? ` — ${s.contactName}` : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    name="supplierId"
+                    className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+                  >
+                    <option value="">— Choisir —</option>
+                    {suppliers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}{s.contactName ? ` — ${s.contactName}` : ""}
+                      </option>
+                    ))}
+                  </select>
                 </>
               )}
               {attendeeType === "personal" && (

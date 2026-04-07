@@ -4,17 +4,17 @@ import { getDb } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 const BUSINESS_SYSTEM_PROMPT = `Tu es un assistant de recherche business spécialisé dans le Luxembourg.
-Tu dois trouver le gérant, propriétaire ou dirigeant d'un salon de beauté/coiffure au Luxembourg.
+Tu dois trouver le gérant, propriétaire ou dirigeant d'un commerce au Luxembourg.
 
-Si un site web du salon est fourni dans la requête, consulte-le EN PRIORITÉ — la page Contact ou À propos contient souvent le nom, email et téléphone du gérant.
+MÉTHODE DE RECHERCHE (suis cet ordre) :
+1. Si un site web est fourni, consulte-le EN PRIORITÉ — pages Contact, À propos, Mentions légales, Impressum
+2. Sinon, cherche d'abord le site web du commerce sur Google (nom + ville + Luxembourg)
+3. Cherche sur rcsl.lu (RCS Luxembourg) le nom de la société pour trouver le gérant officiel
+4. Cherche sur LinkedIn la société et ses employés
+5. Cherche sur Editus.lu, Paperjam.lu, LBR.lu
+6. Cherche sur Google : "nom du commerce" + "gérant" ou "propriétaire" ou "fondateur"
 
-Sources prioritaires :
-0. Site web propre du salon (fourni dans la requête)
-1. RCS Luxembourg (rcsl.lu)
-2. LinkedIn
-3. Editus.lu
-4. Paperjam.lu
-5. LBR.lu
+IMPORTANT : Ne te limite PAS aux annuaires. Cherche aussi le site web propre du commerce — il contient souvent le nom du gérant dans les mentions légales ou la page "À propos".
 
 Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks :
 {
@@ -24,8 +24,8 @@ Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks :
   "owner_phone": "numéro de portable du gérant (format +352...) ou null",
   "rcs_number": "B123456 ou null",
   "linkedin_url": "URL ou null",
-  "website_url": "URL site web du salon ou null",
-  "source": "website|rcsl.lu|linkedin.com|editus.lu|etc ou null",
+  "website_url": "URL site web du commerce ou null",
+  "source": "website|rcsl.lu|linkedin.com|editus.lu|google|etc ou null",
   "confidence": "high|medium|low|none",
   "notes": "Détails additionnels utiles"
 }`;
@@ -111,12 +111,16 @@ export async function POST(
     // Business lead: find the owner
     systemPrompt = BUSINESS_SYSTEM_PROMPT;
     const parts: string[] = [
-      `Qui est le gérant ou propriétaire du salon "${lead.displayName}" situé à ${lead.address || "Luxembourg"} ?`,
+      `Qui est le gérant ou propriétaire de "${lead.displayName}" situé à ${lead.address || "Luxembourg"} ?`,
     ];
     if (lead.websiteUrl) {
-      parts.push(`Site web du salon : ${lead.websiteUrl} — consulte la page Contact et À propos.`);
-    } else if (lead.sourceUrl) {
-      parts.push(`Profil Salonkee : ${lead.sourceUrl}`);
+      parts.push(`Site web : ${lead.websiteUrl} — consulte les pages Contact, À propos et Mentions légales.`);
+    }
+    if (lead.sourceUrl) {
+      parts.push(`Profil en ligne : ${lead.sourceUrl}`);
+    }
+    if (!lead.websiteUrl) {
+      parts.push(`Cherche d'abord le site web de "${lead.displayName}" sur Google.`);
     }
     parts.push("Trouve son nom complet, email professionnel et numéro de portable.");
     userMessage = parts.join(" ");

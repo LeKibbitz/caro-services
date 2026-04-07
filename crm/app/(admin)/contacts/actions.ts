@@ -55,3 +55,26 @@ export async function updateContact(id: string, formData: FormData) {
   revalidatePath(`/contacts/${id}`);
   redirect(`/contacts/${id}`);
 }
+
+export async function deleteContact(id: string): Promise<{ error?: string }> {
+  const db = getDb();
+  const contact = await db.contact.findUnique({
+    where: { id },
+    include: {
+      _count: { select: { quotes: true, invoices: true, dossiers: true, documents: true } },
+    },
+  });
+  if (!contact) return { error: "Contact introuvable" };
+  const { quotes, invoices, dossiers, documents } = contact._count;
+  if (quotes > 0) return { error: `Impossible : ${quotes} devis lié(s). Supprimez-les d'abord.` };
+  if (invoices > 0) return { error: `Impossible : ${invoices} facture(s) liée(s). Supprimez-les d'abord.` };
+  if (dossiers > 0) return { error: `Impossible : ${dossiers} dossier(s) lié(s). Supprimez-les d'abord.` };
+  if (documents > 0) return { error: `Impossible : ${documents} document(s) lié(s). Supprimez-les d'abord.` };
+  // Nullify optional relations before deleting
+  await db.lead.updateMany({ where: { contactId: id }, data: { contactId: null } });
+  await db.message.deleteMany({ where: { contactId: id } });
+  await db.appointment.updateMany({ where: { contactId: id }, data: { contactId: null } });
+  await db.contact.delete({ where: { id } });
+  revalidatePath("/contacts");
+  return {};
+}

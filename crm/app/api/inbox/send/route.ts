@@ -25,12 +25,9 @@ export async function POST(req: NextRequest) {
   const db = getDb();
 
   if (channel === "whatsapp") {
-    const bridgeUrl = process.env.WA_BRIDGE_URL;
-    if (!bridgeUrl) {
-      return NextResponse.json({ error: "Bridge WA non configuré" }, { status: 503 });
-    }
-    const waTo = to.replace(/[^\d]/g, "") + "@c.us";
-    const res = await fetch(bridgeUrl, {
+    const bridgeInternal = process.env.WA_BRIDGE_INTERNAL || "http://caro-wa-bridge:3101";
+    const waTo = to.includes("@") ? to : to.replace(/[^\d]/g, "") + "@c.us";
+    const res = await fetch(`${bridgeInternal}/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to: waTo, message }),

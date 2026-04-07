@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FolderOpen, Calendar, FileUp } from "lucide-react";
+import { FolderOpen, Calendar, FileUp, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateDossierStatus } from "../actions";
+import { updateDossierStatus, deleteDossier } from "../actions";
 import { DossierChecklist } from "@/components/dossier-checklist";
+import { DeleteButton } from "@/components/delete-button";
 
 const TYPE_LABELS: Record<string, string> = {
   tva_mensuelle: "TVA Mensuelle",
@@ -64,6 +65,19 @@ export default async function DossierDetailPage({
             {dossier.year}
             {dossier.period ? ` · ${dossier.period}` : ""}
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href={`/dossiers/${id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+          </Link>
+          <DeleteButton
+            onDelete={deleteDossier.bind(null, id)}
+            redirectTo="/dossiers"
+            confirmMessage="Supprimer ce dossier ? Cette action est irréversible."
+          />
         </div>
       </div>
 

@@ -9,44 +9,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { updateLeadStatus } from "../actions";
-import type { LeadStatus } from "@/lib/generated/prisma/client";
+import { updateOutreachStatus } from "../actions";
+import type { OutreachStatus } from "@/lib/generated/prisma/client";
 
-const STATUSES: Array<{ value: LeadStatus; label: string }> = [
-  { value: "new", label: "Nouveau" },
-  { value: "contacted", label: "Contacté" },
+const STATUSES: Array<{ value: OutreachStatus; label: string }> = [
+  { value: "draft", label: "Brouillon" },
+  { value: "sent", label: "Envoyé" },
   { value: "replied", label: "Répondu" },
-  { value: "qualified", label: "Qualifié" },
-  { value: "lost", label: "Perdu" },
-  { value: "converted", label: "Converti" },
+  { value: "bounced", label: "Échec" },
 ];
 
 const STATUS_VARIANT: Record<
-  LeadStatus,
+  OutreachStatus,
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  new: "secondary",
-  contacted: "default",
+  draft: "secondary",
+  sent: "default",
   replied: "default",
-  qualified: "default",
-  lost: "destructive",
-  converted: "outline",
+  bounced: "destructive",
 };
 
-export function LeadStatusSelect({
-  leadId,
+export function OutreachStatusSelect({
+  outreachId,
   currentStatus,
 }: {
-  leadId: string;
-  currentStatus: LeadStatus;
+  outreachId: string;
+  currentStatus: OutreachStatus;
 }) {
   const [status, setStatus] = useState(currentStatus);
   const [, startTransition] = useTransition();
 
-  function handleChange(next: LeadStatus) {
+  function handleChange(next: OutreachStatus) {
     if (next === status) return;
     setStatus(next);
-    startTransition(() => updateLeadStatus(leadId, next));
+    startTransition(() => updateOutreachStatus(outreachId, next));
   }
 
   const label = STATUSES.find((s) => s.value === status)?.label ?? status;
@@ -54,7 +50,12 @@ export function LeadStatusSelect({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-1 outline-none bg-transparent border-none p-0 cursor-pointer">
-        <Badge variant={STATUS_VARIANT[status]}>{label}</Badge>
+        <Badge
+          variant={STATUS_VARIANT[status]}
+          className={status === "replied" ? "bg-emerald-600" : ""}
+        >
+          {label}
+        </Badge>
         <ChevronDown className="h-3 w-3 text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

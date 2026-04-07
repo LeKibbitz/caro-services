@@ -1,4 +1,5 @@
 import { ImapFlow } from "imapflow";
+import { simpleParser } from "mailparser";
 import type { getDb } from "./db";
 import { getImapConfig } from "./settings";
 
@@ -65,11 +66,9 @@ export async function syncInboxEmails(
 
           let body = "";
           if (msg.source) {
-            const raw = Buffer.isBuffer(msg.source)
-              ? msg.source.toString("utf-8")
-              : Buffer.from(msg.source as Uint8Array).toString("utf-8");
-            const sep = raw.indexOf("\r\n\r\n");
-            body = (sep >= 0 ? raw.slice(sep + 4) : raw).slice(0, 8000);
+            const parsed = await simpleParser(msg.source);
+            const html = parsed.html || "";
+            body = (parsed.text || (typeof html === "string" ? html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "") || "").slice(0, 8000);
           }
 
           await db.message.create({

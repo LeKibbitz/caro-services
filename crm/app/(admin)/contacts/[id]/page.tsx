@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { SendMagicLinkButton } from "@/components/send-magic-link-button";
+import { InboxActions } from "@/app/(admin)/inbox/inbox-actions";
+import { DeleteButton } from "@/components/delete-button";
+import { deleteContact } from "../actions";
 
 export default async function ContactDetailPage({
   params,
@@ -67,6 +70,14 @@ export default async function ContactDetailPage({
           )}
         </div>
         <div className="flex gap-2">
+          {(contact.email || contact.phone || contact.waId) && (
+            <InboxActions
+              replyTo={contact.email ?? contact.phone ?? contact.waId ?? undefined}
+              replyChannel={contact.email ? "email" : "whatsapp"}
+              compact
+              compactLabel="Contacter"
+            />
+          )}
           {contact.email && (
             <SendMagicLinkButton contactId={id} />
           )}
@@ -76,6 +87,11 @@ export default async function ContactDetailPage({
               Modifier
             </Button>
           </Link>
+          <DeleteButton
+            onDelete={deleteContact.bind(null, id)}
+            redirectTo="/contacts"
+            confirmMessage={`Supprimer ${contact.firstName} ${contact.lastName} ? Cette action est irréversible.`}
+          />
         </div>
       </div>
 

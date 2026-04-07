@@ -4,7 +4,28 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import type { AppointmentType } from "@/lib/generated/prisma/client";
+import type { AppointmentType, AppointmentStatus } from "@/lib/generated/prisma/client";
+
+export async function updateAppointment(id: string, formData: FormData) {
+  const db = getDb();
+  const startAtStr = formData.get("startAt") as string;
+  const endAtStr = formData.get("endAt") as string;
+  await db.appointment.update({
+    where: { id },
+    data: {
+      title: formData.get("title") as string,
+      description: (formData.get("description") as string) || null,
+      startAt: new Date(startAtStr),
+      endAt: new Date(endAtStr),
+      location: (formData.get("location") as string) || null,
+      type: (formData.get("type") as AppointmentType) || "consultation",
+      status: (formData.get("status") as AppointmentStatus) || "scheduled",
+    },
+  });
+  revalidatePath("/calendar");
+  revalidatePath(`/calendar/${id}`);
+  redirect(`/calendar/${id}`);
+}
 
 export async function createAppointment(formData: FormData) {
   const db = getDb();

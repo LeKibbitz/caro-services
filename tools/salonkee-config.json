@@ -1,0 +1,35 @@
+{
+  "base_url": "https://www.salonkee.lu",
+  "categories": [
+    "hairdressers",
+    "barbers",
+    "beauty-salons",
+    "nail-studios",
+    "massage",
+    "spa-wellness",
+    "tattoo-piercing"
+  ],
+  "cities": [
+    "luxembourg",
+    "esch-sur-alzette",
+    "differdange",
+    "dudelange",
+    "ettelbruck",
+    "strassen",
+    "bertrange",
+    "hesperange",
+    "mersch",
+    "petange",
+    "bettembourg",
+    "remich",
+    "diekirch",
+    "grevenmacher",
+    "echternach",
+    "wiltz"
+  ],
+  "delays": {
+    "between_searches": 3,
+    "between_salons": 1.5,
+    "between_enrichments": 2
+  }
+}

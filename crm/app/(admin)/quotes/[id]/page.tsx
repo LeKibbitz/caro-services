@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, FileText, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateQuoteStatus, convertQuoteToInvoice } from "../actions";
+import { updateQuoteStatus, convertQuoteToInvoice, deleteQuote } from "../actions";
+import { SendQuoteButton } from "./send-quote-button";
+import { DeleteButton } from "@/components/delete-button";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Brouillon",
@@ -51,23 +53,41 @@ export default async function QuoteDetailPage({
             {new Date(quote.createdAt).toLocaleDateString("fr-FR")}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Link href={`/quotes/${id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+          </Link>
+          <SendQuoteButton
+            quoteNumber={quote.number}
+            contactEmail={quote.contact.email}
+            contactPhone={quote.contact.phone}
+            total={Number(quote.total)}
+            items={items}
+          />
           {quote.status === "draft" && (
             <form action={updateQuoteStatus.bind(null, id, "sent")}>
-              <Button variant="outline" size="sm">
+              <Button type="submit" variant="outline" size="sm">
                 Marquer envoyé
               </Button>
             </form>
           )}
-          {(quote.status === "sent" || quote.status === "accepted") &&
+          {quote.status !== "rejected" && quote.status !== "expired" &&
             quote.invoices.length === 0 && (
               <form action={convertQuoteToInvoice.bind(null, id)}>
-                <Button size="sm">
+                <Button type="submit" size="sm">
                   <ArrowRight className="h-4 w-4 mr-2" />
                   Convertir en facture
                 </Button>
               </form>
             )}
+          <DeleteButton
+            onDelete={deleteQuote.bind(null, id)}
+            redirectTo="/quotes"
+            confirmMessage={`Supprimer le devis ${quote.number} ? Cette action est irréversible.`}
+          />
         </div>
       </div>
 
@@ -111,16 +131,14 @@ export default async function QuoteDetailPage({
               <span className="text-muted-foreground">Sous-total</span>
               <span className="font-mono">{Number(quote.subtotal).toFixed(2)}€</span>
             </div>
-            {Number(quote.taxRate) > 0 && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  TVA ({Number(quote.taxRate)}%)
-                </span>
-                <span className="font-mono">
-                  {Number(quote.taxAmount).toFixed(2)}€
-                </span>
-              </div>
-            )}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">
+                TVA ({Number(quote.taxRate)}%)
+              </span>
+              <span className="font-mono">
+                {Number(quote.taxAmount).toFixed(2)}€
+              </span>
+            </div>
             <div className="flex justify-between text-base font-bold pt-1 border-t">
               <span>Total</span>
               <span className="font-mono">{Number(quote.total).toFixed(2)}€</span>

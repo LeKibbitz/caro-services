@@ -1,10 +1,13 @@
-import { getSmtpConfig, getImapConfig, getSetting } from "@/lib/settings";
+import { getSmtpConfig, getImapConfig, getSettingSource } from "@/lib/settings";
 import { EmailSettingsForm } from "./email-settings-form";
 
 export default async function EmailSettingsPage() {
-  const [smtp, imap] = await Promise.all([getSmtpConfig(), getImapConfig()]);
-  const smtpPassDb = await getSetting("SMTP_PASS");
-  const imapPassDb = await getSetting("IMAP_PASS");
+  const [smtp, imap, smtpPassSource, imapPassSource] = await Promise.all([
+    getSmtpConfig(),
+    getImapConfig(),
+    getSettingSource("SMTP_PASS"),
+    getSettingSource("IMAP_PASS"),
+  ]);
 
   return (
     <div className="space-y-6 max-w-xl">
@@ -21,8 +24,8 @@ export default async function EmailSettingsPage() {
         smtpUser={smtp.user}
         imapHost={imap.host}
         imapPort={imap.port}
-        hasSmtpPass={!!smtpPassDb}
-        hasImapPass={!!imapPassDb}
+        smtpPassSource={smtpPassSource}
+        imapPassSource={imapPassSource}
       />
     </div>
   );

@@ -116,32 +116,29 @@ export async function createOutreach(formData: FormData): Promise<{ error?: stri
 
   if (sendNow && (channel === "whatsapp" || channel === "sms") && outreach.lead.phone) {
     const waPhone = outreach.lead.phone.replace(/[^\d+]/g, "").replace(/^\+/, "") + "@c.us";
-    const bridgeUrl = process.env.WA_BRIDGE_URL;
-    const bridgeToken = process.env.WA_BRIDGE_TOKEN;
-    if (bridgeUrl && bridgeToken) {
-      // Send text message
-      await fetch(bridgeUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: bridgeToken, to: waPhone, message: body }),
-      }).catch(() => {});
+    const bridgeInternal = process.env.WA_BRIDGE_INTERNAL || "http://caro-wa-bridge:3101";
 
-      // Send card image if selected
-      if (cardVersion) {
-        const imageBase64 = getCardImageBase64(cardVersion);
-        if (imageBase64) {
-          await fetch(bridgeUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              token: bridgeToken,
-              to: waPhone,
-              image_base64: imageBase64,
-              image_mimetype: "image/png",
-              caption: "Ma carte de visite",
-            }),
-          }).catch(() => {});
-        }
+    // Send text message via local bridge
+    await fetch(`${bridgeInternal}/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to: waPhone, message: body }),
+    }).catch(() => {});
+
+    // Send card image if selected
+    if (cardVersion) {
+      const imageBase64 = getCardImageBase64(cardVersion);
+      if (imageBase64) {
+        await fetch(`${bridgeInternal}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: waPhone,
+            image_base64: imageBase64,
+            image_mimetype: "image/png",
+            caption: "Ma carte de visite",
+          }),
+        }).catch(() => {});
       }
     }
   }

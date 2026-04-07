@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Clock, MapPin, CalendarPlus } from "lucide-react";
 import Link from "next/link";
+import { ExportButton } from "@/components/export-button";
 
 function gcalUrl(apt: {
   title: string;
@@ -91,12 +92,15 @@ export default async function CalendarPage({
             {appointments.length} rendez-vous ce mois
           </p>
         </div>
-        <Link href="/calendar/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau RDV
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButton entity="appointments" />
+          <Link href="/calendar/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Nouveau RDV
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Month navigation */}
@@ -127,7 +131,8 @@ export default async function CalendarPage({
                 </h3>
                 <div className="space-y-2">
                   {apts.map((apt) => (
-                    <Card key={apt.id} className="hover:bg-muted/30 transition-colors">
+                    <Link key={apt.id} href={`/calendar/${apt.id}`}>
+                    <Card className="hover:bg-muted/30 transition-colors cursor-pointer">
                       <CardContent className="py-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div
@@ -195,6 +200,7 @@ export default async function CalendarPage({
                         </div>
                       </CardContent>
                     </Card>
+                    </Link>
                   ))}
                 </div>
               </div>

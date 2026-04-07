@@ -60,7 +60,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
         <StatCard title="Clients" value={contactsCount} icon={<Users className="h-4 w-4" />} href="/contacts" />
         <StatCard title="Leads" value={leadsCount} icon={<Target className="h-4 w-4" />} href="/leads" />
-        <StatCard title="Envois" value={outreachSentCount} icon={<Send className="h-4 w-4" />} href="/leads" />
+        <StatCard title="Envois" value={outreachSentCount} icon={<Send className="h-4 w-4" />} href="#envois" />
         <StatCard title="Devis" value={quotesCount} icon={<FileText className="h-4 w-4" />} href="/quotes" />
         <StatCard title="Factures" value={invoicesCount} icon={<Receipt className="h-4 w-4" />} href="/invoices" />
         <StatCard title="Dossiers" value={dossiersCount} icon={<FolderOpen className="h-4 w-4" />} href="/dossiers" />
@@ -76,6 +76,7 @@ export default async function DashboardPage() {
               Derniers envois
             </CardTitle>
           </CardHeader>
+          <div id="envois" className="scroll-mt-24" />
           <CardContent>
             {recentOutreaches.length === 0 ? (
               <p className="text-sm text-muted-foreground">Aucun envoi pour le moment.</p>
