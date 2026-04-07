@@ -27,6 +27,9 @@ export async function POST(req: NextRequest) {
   let updated = 0;
   let skipped = 0;
 
+  // Generate batch ID for tracking this import wave
+  const batchId = `import-${new Date().toISOString().slice(0, 16).replace(/[T:]/g, "-")}`;
+
   for (const raw of items) {
     const s = raw as Record<string, unknown>;
     const leadType = (s.lead_type as string) || "business";
@@ -93,6 +96,7 @@ export async function POST(req: NextRequest) {
               displayName,
               address,
               leadType,
+              importBatch: batchId,
               ...businessData,
               ...forumData,
             },
@@ -119,7 +123,7 @@ export async function POST(req: NextRequest) {
           updated++;
         } else {
           await db.lead.create({
-            data: { displayName, address, leadType, ...businessData },
+            data: { displayName, address, leadType, importBatch: batchId, ...businessData },
           });
           created++;
         }
@@ -129,5 +133,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ created, updated, skipped, total: items.length });
+  return NextResponse.json({ created, updated, skipped, total: items.length, batchId });
 }

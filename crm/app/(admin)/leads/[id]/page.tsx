@@ -16,7 +16,8 @@ import { OutreachStatusSelect } from "./outreach-status-select";
 import { RunWorkflowButton } from "./run-workflow-button";
 import { getWorkflows } from "@/lib/workflows";
 import { DeleteButton } from "@/components/delete-button";
-import { deleteLead } from "../actions";
+import { LeadLabels } from "@/components/lead-labels";
+import { deleteLead, getLabels } from "../actions";
 import type { LeadStatus, OutreachChannel, OutreachStatus } from "@/lib/generated/prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -58,15 +59,17 @@ export default async function LeadDetailPage({
   const { id } = await params;
   const db = getDb();
 
-  const [lead, workflows] = await Promise.all([
+  const [lead, workflows, allLabels] = await Promise.all([
     db.lead.findUnique({
       where: { id },
       include: {
         outreaches: { orderBy: { createdAt: "desc" } },
         contact: { select: { id: true, firstName: true, lastName: true } },
+        labels: { include: { label: true } },
       },
     }),
     getWorkflows(),
+    getLabels(),
   ]);
 
   if (!lead) notFound();
@@ -89,6 +92,13 @@ export default async function LeadDetailPage({
                 {lead.address}
               </p>
             )}
+            <div className="mt-1.5">
+              <LeadLabels
+                leadId={lead.id}
+                activeLabels={lead.labels.map((ll) => ll.label)}
+                allLabels={allLabels}
+              />
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">

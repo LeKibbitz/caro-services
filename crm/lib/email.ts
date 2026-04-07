@@ -27,7 +27,6 @@ export async function sendOutreachEmail({
   const cfg = await getSmtpConfig();
   const cardBlock = cardImageUrl
     ? `<div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee;">
-         <p style="color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Ma carte de visite</p>
          <img src="${cardImageUrl}" alt="Carte de visite Caroline Charpentier"
               style="width: 340px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);" />
        </div>`

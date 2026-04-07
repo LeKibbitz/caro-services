@@ -136,7 +136,7 @@ export async function createOutreach(formData: FormData): Promise<{ error?: stri
             to: waPhone,
             image_base64: imageBase64,
             image_mimetype: "image/png",
-            caption: "Ma carte de visite",
+            caption: "",
           }),
         }).catch(() => {});
       }
@@ -247,6 +247,40 @@ export async function updateOutreachStatus(outreachId: string, status: string) {
   });
 
   revalidatePath(`/leads/${outreach.leadId}`);
+  revalidatePath("/leads");
+}
+
+// ─── Labels ────────────────────────────────────────────
+
+export async function getLabels() {
+  const db = getDb();
+  return db.label.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function createLabel(name: string, color = "#6b7280") {
+  const db = getDb();
+  const label = await db.label.create({ data: { name: name.trim(), color } });
+  revalidatePath("/leads");
+  return label;
+}
+
+export async function toggleLeadLabel(leadId: string, labelId: string) {
+  const db = getDb();
+  const existing = await db.leadLabel.findUnique({
+    where: { leadId_labelId: { leadId, labelId } },
+  });
+  if (existing) {
+    await db.leadLabel.delete({ where: { leadId_labelId: { leadId, labelId } } });
+  } else {
+    await db.leadLabel.create({ data: { leadId, labelId } });
+  }
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${leadId}`);
+}
+
+export async function deleteLabel(labelId: string) {
+  const db = getDb();
+  await db.label.delete({ where: { id: labelId } });
   revalidatePath("/leads");
 }
 
