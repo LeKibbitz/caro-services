@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Pencil, Trash2, Mail, MessageCircle, Smartphone, X, Check, CreditCard } from "lucide-react";
+import { AiImproveButton } from "@/components/ai-improve-button";
 import { createTemplate, updateTemplate, deleteTemplate } from "./actions";
 import { CARD_VERSIONS } from "@/lib/cards";
 import type { OutreachChannel } from "@/lib/generated/prisma/client";
@@ -83,6 +84,7 @@ function TemplateForm({
   onCancel: () => void;
 }) {
   const [channel, setChannel] = useState<OutreachChannel>(initial?.channel ?? "email");
+  const [bodyText, setBodyText] = useState(initial?.body ?? "");
   const [cardVersion, setCardVersion] = useState<string | null>(initial?.cardVersion ?? null);
   const [pending, setPending] = useState(false);
 
@@ -128,10 +130,14 @@ function TemplateForm({
         </div>
       )}
       <div className="space-y-1.5">
-        <Label className="text-xs">Corps du message</Label>
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">Corps du message</Label>
+          <AiImproveButton getText={() => bodyText} setText={setBodyText} channel={channel} />
+        </div>
         <Textarea
           name="body"
-          defaultValue={initial?.body}
+          value={bodyText}
+          onChange={(e) => setBodyText(e.target.value)}
           placeholder={`Bonjour [Prénom],\n\nVotre message...`}
           rows={7}
           required

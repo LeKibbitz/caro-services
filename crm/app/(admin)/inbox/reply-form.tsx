@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Send, X } from "lucide-react";
+import { AiImproveButton } from "@/components/ai-improve-button";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -105,7 +106,10 @@ export function ReplyForm({ defaultTo = "", defaultChannel = "whatsapp", default
       )}
 
       <div className="space-y-1">
-        <Label className="text-xs">Message</Label>
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">Message</Label>
+          <AiImproveButton getText={() => message} setText={setMessage} channel={channel} context={originalBody} />
+        </div>
         <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}

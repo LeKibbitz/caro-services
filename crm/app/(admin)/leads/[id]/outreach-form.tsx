@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Send, FileText, Mail, MessageCircle, Smartphone, CreditCard, Settings } from "lucide-react";
+import { AiImproveButton } from "@/components/ai-improve-button";
 import { createOutreach } from "../actions";
 import { CARD_VERSIONS } from "@/lib/cards";
 import type { OutreachChannel } from "@/lib/generated/prisma/client";
@@ -180,7 +181,10 @@ export function OutreachForm({
 
       {/* Body */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Message</Label>
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">Message</Label>
+          <AiImproveButton getText={() => body} setText={setBody} channel={channel} />
+        </div>
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
