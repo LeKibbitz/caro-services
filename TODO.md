@@ -60,7 +60,7 @@
 - [x] Thème CSS inspiré caroline-finance.com (Inter Tight, accent orange)
 - [x] Corriger pagination scraper (form POST wpForo + réutilisation onglet CDP — 0 doublons)
 - [x] Endpoint enrichissement batch /api/leads/enrich-batch (Bearer token)
-- [ ] Enrichir les 40 leads forum via Perplexity (BLOQUÉ — quota API épuisé, recharger sur perplexity.ai/settings/api)
+- [x] Enrichir les 72 leads forum via Perplexity (53 high, 15 medium, 4 low — coût ~$0.36)
 - [ ] Scraper petites annonces lesfrontaliers.lu (sélecteurs à valider via CDP)
 - [ ] Intégrer Salonkee scraper côté serveur (docker exec caro-scraper)
 - [ ] Ajouter scheduling n8n pour scrapes automatiques
