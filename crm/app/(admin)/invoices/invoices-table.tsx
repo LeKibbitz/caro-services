@@ -3,6 +3,13 @@
 import { FilterableList, type Column } from "@/components/filterable-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteInvoices, bulkExportInvoices, bulkMarkInvoicesPaid } from "./bulk-actions";
+import { Check } from "lucide-react";
 import Link from "next/link";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -104,9 +111,20 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
       searchPlaceholder="Rechercher une facture..."
       emptyMessage="Aucune facture. Créez un devis et convertissez-le en facture."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} facture{ids.length > 1 ? "s" : ""} sélectionnée{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteInvoices, "facture"),
+            makeExportAction(bulkExportInvoices, "factures"),
+            {
+              key: "mark-paid",
+              label: "Marquer payées",
+              icon: <Check className="h-3 w-3" />,
+              action: bulkMarkInvoicesPaid,
+              onComplete: () => window.location.reload(),
+            },
+          ]}
+        />
       )}
     />
   );
@@ -149,9 +167,19 @@ export function ImpayesTable({ invoices }: { invoices: InvoiceRow[] }) {
       searchPlaceholder="Rechercher un impayé..."
       emptyMessage="Aucun impayé — tout est en ordre !"
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} facture{ids.length > 1 ? "s" : ""} sélectionnée{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeExportAction(bulkExportInvoices, "impayes"),
+            {
+              key: "mark-paid",
+              label: "Marquer payées",
+              icon: <Check className="h-3 w-3" />,
+              action: bulkMarkInvoicesPaid,
+              onComplete: () => window.location.reload(),
+            },
+          ]}
+        />
       )}
     />
   );

@@ -2,12 +2,19 @@
 
 import { FilterableList, type Column } from "@/components/filterable-list";
 import { LeadStatusSelect } from "@/components/lead-status-select";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+  makeEnrichAction,
+  makeCampaignAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteLeads, bulkExportLeads, bulkEnrichLeads } from "./bulk-actions";
 import { Phone, Mail, User, MessageSquare, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { LeadStatus } from "@/lib/generated/prisma/client";
-import { Button } from "@/components/ui/button";
 
 const CONFIDENCE_COLORS: Record<string, string> = {
   high: "bg-emerald-100 text-emerald-800",
@@ -198,9 +205,17 @@ export function LeadsTable({ leads, statuses }: Props) {
       searchPlaceholder="Salon, gérant, adresse, téléphone..."
       emptyMessage="Aucun lead trouvé."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} lead{ids.length > 1 ? "s" : ""} sélectionné{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteLeads, "lead"),
+            makeExportAction(bulkExportLeads, "leads"),
+            makeEnrichAction(bulkEnrichLeads),
+            makeCampaignAction("email", "Campagne email"),
+            makeCampaignAction("whatsapp", "Campagne WA"),
+            makeCampaignAction("sms", "Campagne SMS"),
+          ]}
+        />
       )}
     />
   );

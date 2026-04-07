@@ -3,7 +3,12 @@
 import { FilterableList } from "@/components/filterable-list";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteSuppliers, bulkExportSuppliers } from "./bulk-actions";
 import { Mail, Phone, Globe, User, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
 
@@ -76,9 +81,13 @@ export function SuppliersGrid({ suppliers }: { suppliers: SupplierRow[] }) {
       searchPlaceholder="Rechercher par nom ou contact..."
       emptyMessage="Aucun fournisseur trouvé."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} fournisseur{ids.length > 1 ? "s" : ""} sélectionné{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteSuppliers, "fournisseur"),
+            makeExportAction(bulkExportSuppliers, "fournisseurs"),
+          ]}
+        />
       )}
     />
   );

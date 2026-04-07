@@ -2,7 +2,13 @@
 
 import { FilterableList, type Column } from "@/components/filterable-list";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+  makeCampaignAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteContacts, bulkExportContacts } from "./bulk-actions";
 import Link from "next/link";
 
 type ContactRow = {
@@ -96,9 +102,14 @@ export function ContactsTable({ contacts }: { contacts: ContactRow[] }) {
       searchPlaceholder="Nom, email, entreprise..."
       emptyMessage="Aucun contact trouvé."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} contact{ids.length > 1 ? "s" : ""} sélectionné{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteContacts, "contact"),
+            makeExportAction(bulkExportContacts, "contacts"),
+            makeCampaignAction("email", "Campagne email"),
+          ]}
+        />
       )}
     />
   );

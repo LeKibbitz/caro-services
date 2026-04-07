@@ -3,7 +3,13 @@
 import { FilterableList } from "@/components/filterable-list";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+  makeStatusAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteDossiers, bulkExportDossiers, bulkUpdateDossierStatus } from "./bulk-actions";
 import { Calendar, AlertTriangle, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
 
@@ -124,9 +130,15 @@ export function DossiersList({ dossiers }: { dossiers: DossierRow[] }) {
       searchPlaceholder="Rechercher un dossier..."
       emptyMessage="Aucun dossier trouvé."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} dossier{ids.length > 1 ? "s" : ""} sélectionné{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteDossiers, "dossier"),
+            makeExportAction(bulkExportDossiers, "dossiers"),
+            makeStatusAction(bulkUpdateDossierStatus, "done", "Marquer terminé"),
+            makeStatusAction(bulkUpdateDossierStatus, "in_progress", "Marquer en cours"),
+          ]}
+        />
       )}
     />
   );

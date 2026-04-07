@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, type ReactNode } from "react";
+import { useState, useMemo, useCallback, useRef, type ReactNode, type MouseEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, X, CheckSquare, Square, MinusSquare } from "lucide-react";
@@ -21,33 +21,19 @@ export type Column<T> = {
 
 type Props<T> = {
   items: T[];
-  /** Fields to search on each item (dot notation NOT supported — top-level only) */
   searchFields: (keyof T)[];
-  /** Nested search: pass a function that returns extra searchable strings */
   searchExtract?: (item: T) => string;
-  /** Column definitions for the table */
   columns: Column<T>[];
-  /** Unique ID extractor */
   getId: (item: T) => string;
-  /** Status filter options */
   statusOptions?: StatusOption[];
-  /** Field to use for status filtering */
   statusField?: keyof T;
-  /** Custom status matcher (for grouped statuses like contacted = contacted+replied+qualified) */
   statusMatcher?: (item: T, status: string) => boolean;
-  /** Search placeholder */
   searchPlaceholder?: string;
-  /** Empty state message */
   emptyMessage?: string;
-  /** Bulk actions — receives selected IDs */
   bulkActions?: (selectedIds: string[]) => ReactNode;
-  /** Layout mode */
   layout?: "table" | "cards" | "rows";
-  /** Card renderer (for cards/rows layout) */
-  renderCard?: (item: T, selected: boolean, onToggle: () => void) => ReactNode;
-  /** Cards grid className */
+  renderCard?: (item: T, selected: boolean, onToggle: (e: MouseEvent) => void) => ReactNode;
   cardsClassName?: string;
-  /** Optional class on the wrapper */
   className?: string;
 };
 
@@ -75,12 +61,12 @@ export function FilterableList<T>({
   const [query, setQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const lastClickedRef = useRef<string | null>(null);
 
   // ---- Filtering ----
   const filtered = useMemo(() => {
     let result = items;
 
-    // Status filter
     if (activeStatus) {
       if (statusMatcher) {
         result = result.filter((item) => statusMatcher(item, activeStatus));
@@ -91,7 +77,6 @@ export function FilterableList<T>({
       }
     }
 
-    // Text search
     if (query.trim()) {
       const q = query.toLowerCase().trim();
       result = result.filter((item) => {
@@ -109,47 +94,66 @@ export function FilterableList<T>({
     return result;
   }, [items, query, activeStatus, searchFields, searchExtract, statusField, statusMatcher]);
 
-  // ---- Selection ----
-  const filteredIds = useMemo(
-    () => new Set(filtered.map(getId)),
-    [filtered, getId]
-  );
+  // Ordered list of IDs in current view (for Shift+click range)
+  const filteredIdList = useMemo(() => filtered.map(getId), [filtered, getId]);
+  const filteredIdSet = useMemo(() => new Set(filteredIdList), [filteredIdList]);
+
   const selectedInView = useMemo(
-    () => new Set([...selected].filter((id) => filteredIds.has(id))),
-    [selected, filteredIds]
+    () => new Set([...selected].filter((id) => filteredIdSet.has(id))),
+    [selected, filteredIdSet]
   );
-  const allSelected = filteredIds.size > 0 && selectedInView.size === filteredIds.size;
+  const allSelected = filteredIdSet.size > 0 && selectedInView.size === filteredIdSet.size;
   const someSelected = selectedInView.size > 0 && !allSelected;
 
-  const toggleOne = useCallback(
-    (id: string) => {
+  // ---- Selection with Shift+click ----
+  const handleItemClick = useCallback(
+    (id: string, e: MouseEvent) => {
+      if (e.shiftKey && lastClickedRef.current && lastClickedRef.current !== id) {
+        // Shift+click: select range between lastClicked and current
+        const lastIdx = filteredIdList.indexOf(lastClickedRef.current);
+        const curIdx = filteredIdList.indexOf(id);
+        if (lastIdx !== -1 && curIdx !== -1) {
+          const start = Math.min(lastIdx, curIdx);
+          const end = Math.max(lastIdx, curIdx);
+          setSelected((prev) => {
+            const next = new Set(prev);
+            for (let i = start; i <= end; i++) {
+              next.add(filteredIdList[i]);
+            }
+            return next;
+          });
+          lastClickedRef.current = id;
+          return;
+        }
+      }
+
+      // Normal click: toggle one
       setSelected((prev) => {
         const next = new Set(prev);
         if (next.has(id)) next.delete(id);
         else next.add(id);
         return next;
       });
+      lastClickedRef.current = id;
     },
-    []
+    [filteredIdList]
   );
 
   const toggleAll = useCallback(() => {
     if (allSelected) {
-      // Deselect all in view
       setSelected((prev) => {
         const next = new Set(prev);
-        for (const id of filteredIds) next.delete(id);
+        for (const id of filteredIdSet) next.delete(id);
         return next;
       });
     } else {
-      // Select all in view
       setSelected((prev) => {
         const next = new Set(prev);
-        for (const id of filteredIds) next.add(id);
+        for (const id of filteredIdSet) next.add(id);
         return next;
       });
     }
-  }, [allSelected, filteredIds]);
+  }, [allSelected, filteredIdSet]);
 
   const clearSelection = useCallback(() => setSelected(new Set()), []);
 
@@ -225,18 +229,25 @@ export function FilterableList<T>({
       {/* Bulk action bar */}
       {selectedInView.size > 0 && bulkActions && (
         <div className="filterable-bulk-bar flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium whitespace-nowrap">
             {selectedInView.size} sélectionné{selectedInView.size !== 1 ? "s" : ""}
           </span>
-          <div className="flex items-center gap-2">{bulkActions([...selectedInView])}</div>
+          <div className="flex items-center gap-2 flex-wrap">{bulkActions([...selectedInView])}</div>
           <button
             type="button"
             onClick={clearSelection}
-            className="ml-auto text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="ml-auto text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
           >
             Désélectionner
           </button>
         </div>
+      )}
+
+      {/* Shift hint */}
+      {selectedInView.size === 1 && (
+        <p className="text-[11px] text-muted-foreground/60 -mt-1">
+          Shift+clic pour sélectionner un bloc
+        </p>
       )}
 
       {/* Content */}
@@ -287,7 +298,7 @@ export function FilterableList<T>({
                       <tr
                         key={id}
                         className={cn(
-                          "border-b last:border-0 transition-colors",
+                          "border-b last:border-0 transition-colors select-none",
                           isSelected
                             ? "bg-primary/5"
                             : "hover:bg-muted/50"
@@ -296,7 +307,7 @@ export function FilterableList<T>({
                         <td className="px-4 py-3 w-10">
                           <button
                             type="button"
-                            onClick={() => toggleOne(id)}
+                            onClick={(e) => handleItemClick(id, e)}
                             className="filterable-checkbox text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {isSelected ? (
@@ -329,7 +340,7 @@ export function FilterableList<T>({
             const id = getId(item);
             const isSelected = selected.has(id);
             return renderCard ? (
-              <div key={id}>{renderCard(item, isSelected, () => toggleOne(id))}</div>
+              <div key={id}>{renderCard(item, isSelected, (e: MouseEvent) => handleItemClick(id, e))}</div>
             ) : null;
           })}
         </div>

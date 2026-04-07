@@ -3,6 +3,13 @@
 import { FilterableList, type Column } from "@/components/filterable-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  BulkActionsBar,
+  makeDeleteAction,
+  makeExportAction,
+  makeStatusAction,
+} from "@/components/bulk-actions-bar";
+import { bulkDeleteQuotes, bulkExportQuotes, bulkUpdateQuoteStatus } from "./bulk-actions";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -92,9 +99,15 @@ export function QuotesTable({ quotes }: { quotes: QuoteRow[] }) {
       searchPlaceholder="Rechercher un devis..."
       emptyMessage="Aucun devis pour le moment."
       bulkActions={(ids) => (
-        <Button variant="outline" size="sm" className="text-xs">
-          {ids.length} devis sélectionné{ids.length > 1 ? "s" : ""}
-        </Button>
+        <BulkActionsBar
+          selectedIds={ids}
+          actions={[
+            makeDeleteAction(bulkDeleteQuotes, "devis"),
+            makeExportAction(bulkExportQuotes, "devis"),
+            makeStatusAction(bulkUpdateQuoteStatus, "sent", "Marquer envoyé"),
+            makeStatusAction(bulkUpdateQuoteStatus, "accepted", "Marquer accepté"),
+          ]}
+        />
       )}
     />
   );
