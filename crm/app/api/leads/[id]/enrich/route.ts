@@ -50,6 +50,31 @@ Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks :
   "confidence": "high|medium|low|none"
 }`;
 
+async function scrapeWebsite(url: string): Promise<string | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; CaroFinanceCRM/1.0)" },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const html = await res.text();
+    // Strip tags, keep text content
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return text.slice(0, 3000);
+  } catch {
+    return null;
+  }
+}
+
 function parseResponse(content: string) {
   let cleaned = content.trim();
   if (cleaned.startsWith("```")) {
@@ -114,11 +139,21 @@ export async function POST(
       `Qui est le gérant ou propriétaire de "${lead.displayName}" situé à ${lead.address || "Luxembourg"} ?`,
     ];
     if (lead.websiteUrl) {
-      parts.push(`Site web : ${lead.websiteUrl} — consulte les pages Contact, À propos et Mentions légales.`);
+      parts.push(`Site web : ${lead.websiteUrl}`);
     }
     if (lead.sourceUrl) {
       parts.push(`Profil en ligne : ${lead.sourceUrl}`);
     }
+
+    // Scrape the website to get actual content for the AI
+    const urlToScrape = lead.websiteUrl || lead.sourceUrl;
+    if (urlToScrape) {
+      const siteContent = await scrapeWebsite(urlToScrape);
+      if (siteContent) {
+        parts.push(`\n\nCONTENU DU SITE WEB (${urlToScrape}) :\n${siteContent}`);
+      }
+    }
+
     if (!lead.websiteUrl) {
       parts.push(`Cherche d'abord le site web de "${lead.displayName}" sur Google.`);
     }
