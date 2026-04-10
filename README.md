@@ -107,4 +107,4 @@ Le workflow LK-HQ Inbox (`K8hViG1lVtQqfJw6` sur lkhq.lekibbitz.fr) contient une 
 
 ---
 
-*Projet géré par [Le Kibbitz](https://lekibbitz.fr) — Thomas Joannes*
+*Projet géré par [Le Kibbitz](https://lekibbitz.fr) — Thomas Joannès*
